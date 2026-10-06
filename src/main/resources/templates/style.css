@@ -20,7 +20,7 @@ html {
     width: 1000px;
     margin: auto;
 }
-/* /HEADER/ */
+
 .header{
     min-height: 100px;
     background-color: #6c757d;
@@ -55,7 +55,7 @@ html {
     font-size: 25px;
     font-family: cursive;
 }
-/* /SECTION/ */
+
 .text{
     margin-top: 20px;
 }
@@ -69,7 +69,7 @@ html {
 .textcursive{
     font-family: cursive;
 }
-/* /FOOTER/ */
+
 .footer{
     height: 130px;
     background-color: #6c757d;
