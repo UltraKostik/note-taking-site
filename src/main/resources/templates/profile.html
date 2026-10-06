@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/css/bootstrap.css">
+    <title>Document</title>
+</head>
+<body>
+<header class="header">
+    <div class="section">
+
+        <div class="headerflex">
+            <a href="index.html" class="title ahref">Заметки</a>
+            <div class="headerflex2">
+                <a href="trashCan.html" class="ahref2">корзина</a>
+                <a href="authoriz.html" class="ahref2">войти</a>
+            </div>
+        </div>
+
+    </div>
+</header>
+
+
+<section class="section content">
+    <h1 class="h1text">Профиль</h1>
+
+    <div class="profile text1">
+        Логин: <br>
+        Email: <br>
+        Пароль: <br>
+    </div>
+    <div class="notes text1">
+        <div>Мои заметки:</div>
+        <table class="">
+            <thead>
+            <tr>
+                <th>Название</th>
+                <th>Описание</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="zametka : ${zametki}">
+                <td th:text="${zametka.name}">Название</td>
+                <td th:text="${zametka.description}">Описание</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</section>
+
+
+<footer class="footer">
+    <div class="section">
+        <div class="footertext">Контактная информация</div>
+
+        <div class="footerflex">
+            <div class="footerbox">
+                8 (800) 600-86-76<br>
+                8 (800) 600-86-76
+            </div>
+            <div class="footerbox">
+                СПбУТУиЭ
+            </div>
+            <div class="footerbox">
+                © 2026 NoteTaking
+            </div>
+        </div>
+    </div>
+</footer>
+</body>
+</html>

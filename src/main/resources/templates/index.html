@@ -25,10 +25,18 @@
 
 
 <section class="section content">
-    <form class="mb-3" method="post">
-        <label for="exampleFormControlTextarea1" class="form-label text1 text text3">Ваша заметка</label>
-        <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-        <button type="submit" class="btn btn-secondary textcursive text ">Отправить</button>
+    <form th:action="@{/zametki/add}" th:object="${zametka}" method="post">
+        <p>
+            <label>Название:
+                <input type="text" th:field="*{name}" required/>
+            </label>
+        </p>
+        <p>
+            <label>Описание:
+                <textarea th:field="*{description}" rows="4"></textarea>
+            </label>
+        </p>
+        <button type="submit">Сохранить</button>
     </form>
 </section>
 
@@ -53,3 +61,4 @@
 </footer>
 </body>
 </html>
+
