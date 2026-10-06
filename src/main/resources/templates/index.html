@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/css/bootstrap.css">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/css/bootstrap.css">
     <title>Document</title>
 </head>
 <body>
@@ -12,34 +12,54 @@
     <div class="section">
 
         <div class="headerflex">
-            <a> href="index.html" class="title ahref">Заметки</a>
+            <a href="index.html" class="title ahref">Заметки</a>
             <div class="headerflex2">
-                <a> href="trashCan.html" class="ahref2">корзина</a>
-                <a> href="authoriz.html" class="ahref2">войти</a>
+                <a href="trashCan.html" class="ahref2">корзина</a>
+                <a href="profile.html" class="ahref2">Профиль</a>
+                <a href="authoriz.html" class="ahref2">войти</a>
             </div>
         </div>
 
     </div>
 </header>
 
-<div class="section">
-    <form>
-        <div class="mb-3 textcursive">
-            <label for="exampleInputEmail1" class="form-label" >Адрес электронной почты</label>
-            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-            <div id="emailHelp" class="form-text">Мы никогда никому не передадим вашу электронную почту.</div>
-        </div>
-        <div class="mb-3 textcursive">
-            <label for="exampleInputPassword1" class="form-label">Пароль</label>
-            <input type="password" class="form-control" id="exampleInputPassword1">
-        </div>
-        <div class="mb-3 form-check textcursive">
-            <input type="checkbox" class="form-check-input" id="exampleCheck1">
-            <label class="form-check-label" for="exampleCheck1">Проверить меня</label>
-        </div>
-        <button type="submit" class="btn btn-secondary textcursive">Отправить</button>
-    </form>
-</div>
+
+<section class="section content d-flex justify-content-center align-items-center py-5">
+    <!-- Контейнер в виде желтого листа (используем bg-warning-subtle для пастельно-желтого цвета) -->
+    <div class="bg-warning-subtle border-start border-5 border-warning rounded p-4 p-md-5 shadow-lg w-100" style="max-width: 550px;">
+        <form th:action="@{/zametki/add}" th:object="${zametka}" method="post">
+
+            <!-- Заголовок блокнота -->
+            <div class="textcursive text-center text-secondary border-bottom border-warning-dark sub-title pb-2 mb-4 fs-4 fw-bold">
+                Новая запись
+            </div>
+
+            <!-- Поле: Название -->
+            <div class="mb-4">
+                <label class="textcursive form-label fw-bold text-dark">Название:</label>
+                <!-- bg-transparent и border-top-0/border-end-0/border-start-0 убирают рамки, оставляя только нижнюю линию -->
+                <input type="text" th:field="*{name}"
+                       class="form-control textcursive bg-transparent border-top-0 border-end-0 border-start-0 border-bottom border-warning-dark rounded-0 px-1 text-dark"
+                       required placeholder="Введите заголовок..."/>
+            </div>
+
+            <!-- Поле: Описание -->
+            <div class="mb-4">
+                <label class="textcursive form-label fw-bold text-dark">Описание:</label>
+                <textarea th:field="*{description}"
+                          class="form-control textcursive bg-transparent border-top-0 border-end-0 border-start-0 border-bottom border-warning-dark rounded-0 px-1 text-dark"
+                          rows="5" placeholder="Начните писать здесь..."></textarea>
+            </div>
+
+            <!-- Кнопка сохранения -->
+            <div class="text-end">
+                <button type="submit" class="btn btn-dark textcursive px-4 shadow-sm">Сохранить</button>
+            </div>
+        </form>
+    </div>
+</section>
+
+
 
 <footer class="footer">
     <div class="section">
