@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="/css/bootstrap.css">
+    <link rel="stylesheet" href="style.css">
     <title>Document</title>
 </head>
 <body>
@@ -22,14 +22,24 @@
     </div>
 </header>
 
-
-<section class="section content">
-    <div class="mb-3">
-        <label for="exampleFormControlTextarea1" class="form-label">Ваша заметка</label>
-        <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-    </div>
-</section>
-
+<div class="section">
+    <form>
+        <div class="mb-3 textcursive">
+            <label for="exampleInputEmail1" class="form-label" >Адрес электронной почты</label>
+            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+            <div id="emailHelp" class="form-text">Мы никогда никому не передадим вашу электронную почту.</div>
+        </div>
+        <div class="mb-3 textcursive">
+            <label for="exampleInputPassword1" class="form-label">Пароль</label>
+            <input type="password" class="form-control" id="exampleInputPassword1">
+        </div>
+        <div class="mb-3 form-check textcursive">
+            <input type="checkbox" class="form-check-input" id="exampleCheck1">
+            <label class="form-check-label" for="exampleCheck1">Проверить меня</label>
+        </div>
+        <button type="submit" class="btn btn-secondary textcursive">Отправить</button>
+    </form>
+</div>
 
 <footer class="footer">
     <div class="section">
