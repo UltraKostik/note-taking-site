@@ -11,7 +11,6 @@
 </head>
 <body>
 
-<!-- ВАШ СТАНДАРТНЫЙ HEADER -->
 <header class="header">
     <div class="section">
         <div class="headerflex">
@@ -24,12 +23,11 @@
     </div>
 </header>
 
-<!-- ОСНОВНОЙ КОНТЕНТ (Использует вашу сетку .section) -->
 <section class="section content py-4">
 
     <h1 class="textcursive mb-4 fs-2">Панель администратора</h1>
 
-    <!-- 1. СТАТИСТИКА (Простые мини-карточки) -->
+
     <div class="row g-3 mb-4">
         <div class="col-md-4">
             <div class="p-3 bg-light border rounded text-center">
@@ -51,7 +49,7 @@
         </div>
     </div>
 
-    <!-- 2. ТАБЛИЦА ПОЛЬЗОВАТЕЛЕЙ -->
+
     <div class="border rounded p-3 mb-4 bg-white">
         <h3 class="textcursive fs-5 mb-3 text-secondary">Управление пользователями</h3>
         <div class="table-responsive">
@@ -65,7 +63,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <!-- Строка с Thymeleaf циклом -->
+
                 <tr th:each="user : ${usersList}">
                     <td th:text="${user.id}">1</td>
                     <td th:text="${user.email}">user@spbutu.ru</td>
@@ -76,7 +74,7 @@
                         </form>
                     </td>
                 </tr>
-                <!-- Статичный пример для наглядности верстки -->
+
                 <tr>
                     <td>2</td>
                     <td>test@mail.ru</td>
@@ -92,7 +90,6 @@
 
 </section>
 
-<!-- ВАШ СТАНДАРТНЫЙ FOOTER -->
 <footer class="footer">
     <div class="section">
         <div class="footertext">Контактная информация</div>
