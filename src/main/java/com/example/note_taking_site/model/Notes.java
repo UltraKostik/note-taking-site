@@ -16,6 +16,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class Notes {
 
+    public enum NoteStatus {
+        ACTIVE,
+        DRAFT,
+        DELETED
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,6 +31,14 @@ public class Notes {
 
     @Column(length = 10000)
     private String description;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private NoteStatus status = NoteStatus.ACTIVE;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "author_id", nullable = false)
+    private User author;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
