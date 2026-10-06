@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/css/bootstrap.css">
+    <title>Document</title>
+</head>
+<body>
+<header class="header">
+    <div class="section">
+
+        <div class="headerflex">
+            <a href="index.html" class="title ahref">Заметки</a>
+            <div class="headerflex2">
+                <a href="trashCan.html" class="ahref2">корзина</a>
+                <a href="profile.html" class="ahref2">Профиль</a>
+                <a href="authoriz.html" class="ahref2">войти</a>
+            </div>
+        </div>
+
+    </div>
+</header>
+
+
+<section class="section content d-flex justify-content-center align-items-center py-5">
+    <div class="bg-warning-subtle border-start border-5 border-warning rounded p-4 p-md-5 shadow-lg w-100" style="max-width: 550px;">
+        <form th:action="@{/zametki/add}" th:object="${zametka}" method="post">
+
+            <div class="textcursive text-center text-secondary border-bottom border-warning-dark sub-title pb-2 mb-4 fs-4 fw-bold">
+                Новая запись
+            </div>
+
+            <div class="mb-4">
+                <label class="textcursive form-label fw-bold text-dark">Название:</label>
+                <input type="text" th:field="*{name}"
+                       class="form-control textcursive bg-transparent border-top-0 border-end-0 border-start-0 border-bottom border-warning-dark rounded-0 px-1 text-dark"
+                       required placeholder="Введите заголовок..."/>
+            </div>
+
+            <div class="mb-4">
+                <label class="textcursive form-label fw-bold text-dark">Описание:</label>
+                <textarea th:field="*{description}"
+                          class="form-control textcursive bg-transparent border-top-0 border-end-0 border-start-0 border-bottom border-warning-dark rounded-0 px-1 text-dark"
+                          rows="5" placeholder="Начните писать здесь..."></textarea>
+            </div>
+
+            <div class="text-end">
+                <button type="submit" class="btn btn-dark textcursive px-4 shadow-sm">Сохранить</button>
+            </div>
+        </form>
+    </div>
+</section>
+
+
+
+<footer class="footer">
+    <div class="section">
+        <div class="footertext">Контактная информация</div>
+
+        <div class="footerflex">
+            <div class="footerbox">
+                8 (800) 600-86-76<br>
+                8 (800) 600-86-76
+            </div>
+            <div class="footerbox">
+                СПбУТУиЭ
+            </div>
+            <div class="footerbox">
+                © 2026 NoteTaking
+            </div>
+        </div>
+    </div>
+</footer>
+</body>
+</html>
