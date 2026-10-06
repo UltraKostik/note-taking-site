@@ -25,25 +25,20 @@
 
 
 <section class="section content d-flex justify-content-center align-items-center py-5">
-    <!-- Контейнер в виде желтого листа (используем bg-warning-subtle для пастельно-желтого цвета) -->
     <div class="bg-warning-subtle border-start border-5 border-warning rounded p-4 p-md-5 shadow-lg w-100" style="max-width: 550px;">
         <form th:action="@{/zametki/add}" th:object="${zametka}" method="post">
 
-            <!-- Заголовок блокнота -->
             <div class="textcursive text-center text-secondary border-bottom border-warning-dark sub-title pb-2 mb-4 fs-4 fw-bold">
                 Новая запись
             </div>
 
-            <!-- Поле: Название -->
             <div class="mb-4">
                 <label class="textcursive form-label fw-bold text-dark">Название:</label>
-                <!-- bg-transparent и border-top-0/border-end-0/border-start-0 убирают рамки, оставляя только нижнюю линию -->
                 <input type="text" th:field="*{name}"
                        class="form-control textcursive bg-transparent border-top-0 border-end-0 border-start-0 border-bottom border-warning-dark rounded-0 px-1 text-dark"
                        required placeholder="Введите заголовок..."/>
             </div>
 
-            <!-- Поле: Описание -->
             <div class="mb-4">
                 <label class="textcursive form-label fw-bold text-dark">Описание:</label>
                 <textarea th:field="*{description}"
@@ -51,7 +46,6 @@
                           rows="5" placeholder="Начните писать здесь..."></textarea>
             </div>
 
-            <!-- Кнопка сохранения -->
             <div class="text-end">
                 <button type="submit" class="btn btn-dark textcursive px-4 shadow-sm">Сохранить</button>
             </div>
