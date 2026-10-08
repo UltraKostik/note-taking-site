@@ -24,7 +24,6 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    // --- регистрация ---
 
     public User register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -38,7 +37,6 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    // --- чтение ---
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -49,7 +47,6 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("User not found: " + id));
     }
 
-    // --- обновление ---
 
     public void changeRole(Long id, User.Role role) {
         User user = getById(id);
@@ -58,7 +55,6 @@ public class UserService {
         log.info("Changing role of user id={} to {}", id, role);
     }
 
-    // --- удаление ---
 
     public void deleteUser(Long id) {
         userRepository.deleteById(id);

@@ -22,7 +22,6 @@ public class ProductService {
         this.productRepository = productRepository;
     }
 
-    // --- create ---
 
     public Notes createNote(NoteRequest request, User author) {
         Notes note = new Notes();
@@ -34,7 +33,6 @@ public class ProductService {
         return productRepository.save(note);
     }
 
-    // --- read ---
 
     public List<Notes> getAllProducts() {
         return productRepository.findAll();
@@ -61,7 +59,6 @@ public class ProductService {
         return productRepository.findAllByStatusOrderByUpdatedAtDesc(status);
     }
 
-    // --- update ---
 
     public void saveProduct(Notes product) {
         productRepository.save(product);
@@ -100,7 +97,6 @@ public class ProductService {
         log.info("Moving note id={} to draft by user {}", id, author.getEmail());
     }
 
-    // --- delete ---
 
     public void deletePermanently(Long id, User author) {
         Notes note = productRepository.findByIdAndAuthor(id, author)
