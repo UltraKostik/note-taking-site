@@ -29,6 +29,29 @@ public class ProductService {
         return productRepository.save(note);
     }
 
+    public Notes getNoteById(Long id, User author) {
+        return productRepository.findByIdAndAuthor(id, author)
+                .orElseThrow(() -> new IllegalArgumentException("Note not found: " + id));
+    }
+
+    public void updateNote(Long id, NoteRequest request, User author) {
+        Notes note = productRepository.findByIdAndAuthor(id, author)
+                .orElseThrow(() -> new IllegalArgumentException("Note not found: " + id));
+        note.setName(request.getName());
+        note.setDescription(request.getDescription());
+        productRepository.save(note);
+    }
+
+    public void deletePermanently(Long id, User author) {
+        Notes note = productRepository.findByIdAndAuthor(id, author)
+                .orElseThrow(() -> new IllegalArgumentException("Note not found: " + id));
+        productRepository.delete(note);
+    }
+
+    public void deletePermanentlyAdmin(Long id) {
+        productRepository.deleteById(id);
+    }
+
     public List<Notes> getAllProducts() {
         return productRepository.findAll();
     }
