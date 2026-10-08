@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+          rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+          crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+    <title>Корзина — Заметки</title>
+</head>
+<body>
+<header class="header">
+    <div class="section">
+        <div class="headerflex">
+            <a href="index.html" class="title ahref">Заметки</a>
+            <div class="headerflex2">
+                <a href="trashCan.html" class="ahref2 text-decoration-underline">корзина</a>
+                <a href="authoriz.html" class="ahref2">войти</a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<section class="section content py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4" th:unless="${#lists.isEmpty(deletedNotes)}">
+        <h1 class="textcursive m-0 fs-2">Удаленные заметки</h1>
+        <form th:action="@{/trash/clear}" th:method="post">
+            <button type="submit" class="btn btn-danger btn-sm textcursive">Очистить корзину</button>
+        </form>
+    </div>
+
+
+    <div class="text-center py-5" th:if="${#lists.isEmpty(deletedNotes)}">
+        <h2 class="textcursive text-muted fs-3">Здесь пусто</h2>
+        <a th:href="@{/}" class="btn btn-secondary btn-sm textcursive mt-3">Вернуться к заметкам</a>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-3 g-4" th:unless="${#lists.isEmpty(deletedNotes)}">
+
+        <div class="col" th:each="note : ${deletedNotes}">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title textcursive fw-bold" th:text="${note.title}">Название заметки</h5>
+                    <p class="card-text text-muted" th:text="${note.content}">Текст удаленной заметки...</p>
+                </div>
+                <div class="card-footer bg-transparent border-top-0 d-flex justify-content-between">
+                    <form th:action="@{/trash/restore/{id}(id=${note.id})}" th:method="post">
+                        <button type="submit" class="btn btn-outline-success btn-sm textcursive">Восстановить</button>
+                    </form>
+
+                    <form th:action="@{/trash/delete/{id}(id=${note.id})}" th:method="post">
+                        <button type="submit" class="btn btn-outline-danger btn-sm textcursive">Удалить</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<footer class="footer">
+    <div class="section">
+        <div class="footertext">Контактная информация</div>
+        <div class="footerflex">
+            <div class="footerbox">
+                8 (800) 600-86-76<br>
+                8 (800) 600-86-76
+            </div>
+            <div class="footerbox">
+                СПбУТУиЭ
+            </div>
+            <div class="footerbox">
+                © 2026 NoteTaking
+            </div>
+        </div>
+    </div>
+</footer>
+</body>
+</html>
