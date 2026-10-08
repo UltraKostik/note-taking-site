@@ -1,8 +1,11 @@
 package com.example.note_taking_site.service;
 
 import com.example.note_taking_site.dto.RegisterRequest;
+import com.example.note_taking_site.exception.UserAlreadyExistsException;
 import com.example.note_taking_site.model.User;
 import com.example.note_taking_site.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +13,8 @@ import java.util.List;
 
 @Service
 public class UserService {
+
+    private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -19,16 +24,21 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    // --- регистрация ---
+
     public User register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new IllegalArgumentException("Email уже занят");
+            throw new UserAlreadyExistsException(request.getEmail());
         }
         User user = new User();
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(User.Role.USER);
+        log.info("Registering new user with email {}", request.getEmail());
         return userRepository.save(user);
     }
+
+    // --- чтение ---
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -39,13 +49,19 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("User not found: " + id));
     }
 
+    // --- обновление ---
+
     public void changeRole(Long id, User.Role role) {
         User user = getById(id);
         user.setRole(role);
         userRepository.save(user);
+        log.info("Changing role of user id={} to {}", id, role);
     }
+
+    // --- удаление ---
 
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
+        log.info("Deleting user id={}", id);
     }
 }

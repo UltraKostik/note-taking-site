@@ -4,6 +4,8 @@ import com.example.note_taking_site.model.Notes;
 import com.example.note_taking_site.model.User;
 import com.example.note_taking_site.service.ProductService;
 import com.example.note_taking_site.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
+
+    private static final Logger log = LoggerFactory.getLogger(AdminController.class);
 
     private final UserService userService;
     private final ProductService productService;
@@ -20,20 +24,24 @@ public class AdminController {
         this.productService = productService;
     }
 
+
     @GetMapping("/users")
     public String listUsers(Model model) {
+        log.info("Admin requested user list");
         model.addAttribute("users", userService.getAllUsers());
         return "admin-users";
     }
 
     @PostMapping("/users/{id}/role")
     public String changeRole(@PathVariable Long id, @RequestParam User.Role role) {
+        log.info("Admin changing role of user id={} to {}", id, role);
         userService.changeRole(id, role);
         return "redirect:/admin/users";
     }
 
     @PostMapping("/users/{id}/delete")
     public String deleteUser(@PathVariable Long id) {
+        log.info("Admin deleting user id={}", id);
         userService.deleteUser(id);
         return "redirect:/admin/users";
     }
@@ -41,6 +49,7 @@ public class AdminController {
     @GetMapping("/notes")
     public String listAllNotes(@RequestParam(required = false) Notes.NoteStatus status,
                                Model model) {
+        log.info("Admin requested all notes, filter status={}", status);
         if (status == null) {
             model.addAttribute("notes", productService.getAllProducts());
         } else {
@@ -53,6 +62,7 @@ public class AdminController {
 
     @PostMapping("/notes/{id}/delete")
     public String deleteNote(@PathVariable Long id) {
+        log.info("Admin deleting note id={}", id);
         productService.deletePermanentlyAdmin(id);
         return "redirect:/admin/notes";
     }
