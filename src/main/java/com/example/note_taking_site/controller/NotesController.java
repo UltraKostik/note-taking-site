@@ -4,7 +4,7 @@ import com.example.note_taking_site.dto.NoteRequest;
 import com.example.note_taking_site.model.Notes;
 import com.example.note_taking_site.model.User;
 import com.example.note_taking_site.repository.UserRepository;
-import com.example.note_taking_site.service.ProductService;
+import com.example.note_taking_site.service.NotesService;
 import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -13,14 +13,13 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping("/products")
-public class ProductController {
+public class NotesController {
 
-    private final ProductService productService;
+    private final NotesService notesService;
     private final UserRepository userRepository;
 
-    public ProductController(ProductService productService, UserRepository userRepository) {
-        this.productService = productService;
+    public NotesController(NotesService notesService, UserRepository userRepository) {
+        this.notesService = notesService;
         this.userRepository = userRepository;
     }
 
@@ -29,94 +28,89 @@ public class ProductController {
                 .orElseThrow(() -> new IllegalStateException("Authenticated user not found in DB"));
     }
 
-    @GetMapping
+    @GetMapping("/notes")
     public String listActive(Authentication auth, Model model) {
         User user = currentUser(auth);
-        model.addAttribute("products", productService.getActiveNotes(user));
-        return "products-list";
-    }
-
-    @GetMapping("/drafts")
-    public String listDrafts(Authentication auth, Model model) {
-        User user = currentUser(auth);
-        model.addAttribute("products", productService.getDraftNotes(user));
+        model.addAttribute("notes", notesService.getActiveNotes(user));
         return "products-list";
     }
 
     @GetMapping("/trash")
     public String listTrash(Authentication auth, Model model) {
         User user = currentUser(auth);
-        model.addAttribute("products", productService.getDeletedNotes(user));
-        return "products-list";
+        model.addAttribute("deletedNotes", notesService.getDeletedNotes(user));
+        return "trash";
     }
 
-    @GetMapping("/add")
+    @GetMapping("/notes/add")
     public String formAdd(Model model) {
         model.addAttribute("noteRequest", new NoteRequest());
         return "product-form";
     }
 
-    @PostMapping("/add")
+    @PostMapping("/notes/add")
     public String add(@Valid @ModelAttribute("noteRequest") NoteRequest request,
                       BindingResult bindingResult,
                       Authentication auth) {
         if (bindingResult.hasErrors()) {
             return "product-form";
         }
-        productService.createNote(request, currentUser(auth));
-        return "redirect:/products";
+        notesService.createNote(request, currentUser(auth));
+        return "redirect:/notes";
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/notes/{id}")
     public String view(@PathVariable Long id, Authentication auth, Model model) {
-        model.addAttribute("note", productService.getNoteById(id, currentUser(auth)));
+        model.addAttribute("note", notesService.getNoteById(id, currentUser(auth)));
         return "product-view";
     }
 
-    @GetMapping("/{id}/edit")
+    @GetMapping("/notes/edit/{id}")
     public String formEdit(@PathVariable Long id, Authentication auth, Model model) {
-        Notes note = productService.getNoteById(id, currentUser(auth));
+        Notes note = notesService.getNoteById(id, currentUser(auth));
         NoteRequest request = new NoteRequest();
-        request.setName(note.getName());
-        request.setDescription(note.getDescription());
+        request.setTitle(note.getTitle());
+        request.setContent(note.getContent());
         model.addAttribute("noteRequest", request);
         model.addAttribute("noteId", id);
         return "product-form";
     }
 
-    @PostMapping("/{id}/edit")
+    @PostMapping("/notes/edit/{id}")
     public String edit(@PathVariable Long id,
                        @Valid @ModelAttribute("noteRequest") NoteRequest request,
                        BindingResult bindingResult,
-                       Authentication auth) {
+                       Authentication auth,
+                       Model model) {
         if (bindingResult.hasErrors()) {
+            model.addAttribute("noteId", id);
             return "product-form";
         }
-        productService.updateNote(id, request, currentUser(auth));
-        return "redirect:/products";
+        notesService.updateNote(id, request, currentUser(auth));
+        return "redirect:/notes";
     }
 
-    @PostMapping("/{id}/trash")
+    @PostMapping("/notes/delete/{id}")
     public String toTrash(@PathVariable Long id, Authentication auth) {
-        productService.moveToTrash(id, currentUser(auth));
-        return "redirect:/products";
+        notesService.moveToTrash(id, currentUser(auth));
+        return "redirect:/notes";
     }
 
-    @PostMapping("/{id}/restore")
+    @PostMapping("/trash/restore/{id}")
     public String restore(@PathVariable Long id, Authentication auth) {
-        productService.restoreFromTrash(id, currentUser(auth));
-        return "redirect:/products/trash";
+        notesService.restoreFromTrash(id, currentUser(auth));
+        return "redirect:/trash";
     }
 
-    @PostMapping("/{id}/draft")
-    public String toDraft(@PathVariable Long id, Authentication auth) {
-        productService.moveToDraft(id, currentUser(auth));
-        return "redirect:/products";
-    }
-
-    @PostMapping("/{id}/delete")
+    @PostMapping("/trash/delete/{id}")
     public String delete(@PathVariable Long id, Authentication auth) {
-        productService.deletePermanently(id, currentUser(auth));
-        return "redirect:/products/trash";
+        notesService.deletePermanently(id, currentUser(auth));
+        return "redirect:/trash";
+    }
+
+    @PostMapping("/trash/clear")
+    public String clearTrash(Authentication auth) {
+        notesService.clearTrash(currentUser(auth));
+        return "redirect:/trash";
     }
 }

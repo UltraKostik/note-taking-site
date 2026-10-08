@@ -9,7 +9,7 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "products")
+@Table(name = "notes")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -27,10 +27,10 @@ public class Notes {
     private Long id;
 
     @Column(nullable = false, length = 120)
-    private String name;
+    private String title;
 
     @Column(length = 10000)
-    private String description;
+    private String content;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
