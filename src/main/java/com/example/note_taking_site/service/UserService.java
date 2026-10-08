@@ -3,7 +3,7 @@ package com.example.note_taking_site.service;
 import com.example.note_taking_site.dto.RegisterRequest;
 import com.example.note_taking_site.exception.UserAlreadyExistsException;
 import com.example.note_taking_site.model.User;
-import com.example.note_taking_site.repository.ProductRepository;
+import com.example.note_taking_site.repository.NotesRepository;
 import com.example.note_taking_site.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,14 +18,14 @@ public class UserService {
     private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
     private final UserRepository userRepository;
-    private final ProductRepository productRepository;
+    private final NotesRepository notesRepository;
     private final PasswordEncoder passwordEncoder;
 
     public UserService(UserRepository userRepository,
-                       ProductRepository productRepository,
+                       NotesRepository notesRepository,
                        PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        this.productRepository = productRepository;
+        this.notesRepository = notesRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -59,7 +59,7 @@ public class UserService {
 
     public void deleteUser(Long id) {
         User user = getById(id);
-        productRepository.deleteAllByAuthor(user);
+        notesRepository.deleteAllByAuthor(user);
         userRepository.delete(user);
         log.info("Deleting user id={} and all their notes", id);
     }

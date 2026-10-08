@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface ProductRepository extends JpaRepository<Notes, Long> {
+public interface NotesRepository extends JpaRepository<Notes, Long> {
 
     List<Notes> findAllByAuthorAndStatusOrderByUpdatedAtDesc(User author, Notes.NoteStatus status);
 

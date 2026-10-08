@@ -2,7 +2,7 @@ package com.example.note_taking_site.controller;
 
 import com.example.note_taking_site.model.Notes;
 import com.example.note_taking_site.model.User;
-import com.example.note_taking_site.service.ProductService;
+import com.example.note_taking_site.service.NotesService;
 import com.example.note_taking_site.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,11 +19,11 @@ public class AdminController {
     private static final Logger log = LoggerFactory.getLogger(AdminController.class);
 
     private final UserService userService;
-    private final ProductService productService;
+    private final NotesService notesService;
 
-    public AdminController(UserService userService, ProductService productService) {
+    public AdminController(UserService userService, NotesService notesService) {
         this.userService = userService;
-        this.productService = productService;
+        this.notesService = notesService;
     }
 
 
@@ -33,9 +33,9 @@ public class AdminController {
         List<User> users = userService.getAllUsers();
         model.addAttribute("usersList", users);
         model.addAttribute("totalUsers", users.size());
-        model.addAttribute("totalNotes", productService.getAllProducts().size());
+        model.addAttribute("totalNotes", notesService.getAllNotes().size());
         model.addAttribute("trashNotesCount",
-                productService.getAllByStatus(Notes.NoteStatus.DELETED).size());
+                notesService.getAllByStatus(Notes.NoteStatus.DELETED).size());
         return "admin";
     }
 
@@ -59,9 +59,9 @@ public class AdminController {
                                Model model) {
         log.info("Admin requested all notes, filter status={}", status);
         if (status == null) {
-            model.addAttribute("notes", productService.getAllProducts());
+            model.addAttribute("notes", notesService.getAllNotes());
         } else {
-            model.addAttribute("notes", productService.getAllByStatus(status));
+            model.addAttribute("notes", notesService.getAllByStatus(status));
         }
         model.addAttribute("statuses", Notes.NoteStatus.values());
         model.addAttribute("selectedStatus", status);
@@ -71,7 +71,7 @@ public class AdminController {
     @PostMapping("/notes/{id}/delete")
     public String deleteNote(@PathVariable Long id) {
         log.info("Admin deleting note id={}", id);
-        productService.deletePermanentlyAdmin(id);
+        notesService.deletePermanentlyAdmin(id);
         return "redirect:/admin/notes";
     }
 }
