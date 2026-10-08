@@ -4,7 +4,7 @@ import com.example.note_taking_site.model.Notes;
 import com.example.note_taking_site.model.User;
 import com.example.note_taking_site.repository.ProductRepository;
 import org.springframework.stereotype.Service;
-
+import com.example.note_taking_site.dto.NoteRequest;
 import java.util.List;
 
 @Service
@@ -18,6 +18,15 @@ public class ProductService {
 
     public void saveProduct(Notes product) {
         productRepository.save(product);
+    }
+
+    public Notes createNote(NoteRequest request, User author) {
+        Notes note = new Notes();
+        note.setName(request.getName());
+        note.setDescription(request.getDescription());
+        note.setAuthor(author);
+        note.setStatus(Notes.NoteStatus.ACTIVE);
+        return productRepository.save(note);
     }
 
     public List<Notes> getAllProducts() {
