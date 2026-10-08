@@ -1,74 +1,76 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="/css/bootstrap.css">
-    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+          crossorigin="anonymous">
+    <title>Профиль</title>
+    <style>
+        .font-cursive { font-family: cursive; }
+        nav a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
-<body>
-<header class="header">
-    <div class="section">
+<body class="d-flex flex-column min-vh-100">
 
-        <div class="headerflex">
-            <a href="index.html" class="title ahref">Заметки</a>
-            <div class="headerflex2">
-                <a href="trashCan.html" class="ahref2">Корзина</a>
-                <a href="authoriz.html" class="ahref2">Войти</a>
-            </div>
+<header class="bg-secondary text-white py-3">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center">
+            <a href="/" class="text-white text-decoration-none font-cursive fs-1">Заметки</a>
+            <nav class="d-flex gap-4">
+                <a href="/trash.html" class="text-white text-decoration-none font-cursive fs-5">Корзина</a>
+                <a href="/authoriz.html" class="text-white text-decoration-none font-cursive fs-5">Войти</a>
+            </nav>
         </div>
-
     </div>
 </header>
 
+<main class="container py-4 flex-grow-1">
 
-<section class="section content">
-    <h1 class="h1text">Профиль</h1>
+    <h1 class="font-cursive text-center mt-3 mb-4">Профиль</h1>
 
-    <div class="profile text1">
+    <div class="font-cursive mb-4">
         Логин: <br>
         Email: <br>
         Пароль: <br>
     </div>
-    <div class="notes text1">
-        <div>Мои заметки:</div>
-        <table class="">
-            <thead>
-            <tr>
-                <th>Название</th>
-                <th>Описание</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="zametka : ${zametki}">
-                <td th:text="${zametka.name}">Название</td>
-                <td th:text="${zametka.description}">Описание</td>
-            </tr>
-            </tbody>
-        </table>
+
+    <div class="font-cursive">
+        <div class="mb-2">Мои заметки:</div>
+        <div class="table-responsive">
+            <table class="table table-striped align-middle">
+                <thead class="table-light font-cursive">
+                <tr>
+                    <th>Название</th>
+                    <th>Описание</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="zametka : ${zametki}">
+                    <td th:text="${zametka.name}">Название</td>
+                    <td th:text="${zametka.description}">Описание</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
-</section>
+</main>
 
-
-<footer class="footer">
-    <div class="section">
-        <div class="footertext">Контактная информация</div>
-
-        <div class="footerflex">
-            <div class="footerbox">
-                8 (800) 600-86-76<br>
-                8 (800) 600-86-76
-            </div>
-            <div class="footerbox">
-                СПбУТУиЭ
-            </div>
-            <div class="footerbox">
-                © 2026 NoteTaking
-            </div>
+<footer class="bg-secondary text-white py-4 mt-auto">
+    <div class="container">
+        <div class="font-cursive fs-5 mb-2">Контактная информация</div>
+        <div class="row text-center font-cursive">
+            <div class="col">8 (800) 600-86-76<br>8 (800) 600-86-76</div>
+            <div class="col">СПбУТУиЭ</div>
+            <div class="col">© 2026 NoteTaking</div>
         </div>
     </div>
 </footer>
+
 </body>
 </html>
