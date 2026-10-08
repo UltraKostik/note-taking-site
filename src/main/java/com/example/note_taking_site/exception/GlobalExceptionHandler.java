@@ -44,4 +44,13 @@ public class GlobalExceptionHandler {
         model.addAttribute("message", "Внутренняя ошибка сервера");
         return "error/500";
     }
+
+
+    @ExceptionHandler(AttachmentNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public String handleAttachmentNotFound(AttachmentNotFoundException e, Model model) {
+        log.warn("Attachment not found: {}", e.getMessage());
+        model.addAttribute("message", "Файл не найден");
+        return "error/404";
+    }
 }
