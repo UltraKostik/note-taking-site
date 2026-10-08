@@ -16,4 +16,6 @@ public interface ProductRepository extends JpaRepository<Notes, Long> {
     List<Notes> findAllByStatusOrderByUpdatedAtDesc(Notes.NoteStatus status);
 
     Optional<Notes> findByIdAndAuthor(Long id, User author);
+
+    void deleteAllByAuthor(User author);
 }

@@ -10,6 +10,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
@@ -25,26 +27,32 @@ public class AdminController {
     }
 
 
-    @GetMapping("/users")
+    @GetMapping
     public String listUsers(Model model) {
         log.info("Admin requested user list");
-        model.addAttribute("users", userService.getAllUsers());
-        return "admin-users";
+        List<User> users = userService.getAllUsers();
+        model.addAttribute("usersList", users);
+        model.addAttribute("totalUsers", users.size());
+        model.addAttribute("totalNotes", productService.getAllProducts().size());
+        model.addAttribute("trashNotesCount",
+                productService.getAllByStatus(Notes.NoteStatus.DELETED).size());
+        return "admin";
+    }
+
+    @PostMapping("/users/ban/{id}")
+    public String banUser(@PathVariable Long id) {
+        log.info("Admin banning user id={}", id);
+        userService.deleteUser(id);
+        return "redirect:/admin";
     }
 
     @PostMapping("/users/{id}/role")
     public String changeRole(@PathVariable Long id, @RequestParam User.Role role) {
         log.info("Admin changing role of user id={} to {}", id, role);
         userService.changeRole(id, role);
-        return "redirect:/admin/users";
+        return "redirect:/admin";
     }
 
-    @PostMapping("/users/{id}/delete")
-    public String deleteUser(@PathVariable Long id) {
-        log.info("Admin deleting user id={}", id);
-        userService.deleteUser(id);
-        return "redirect:/admin/users";
-    }
 
     @GetMapping("/notes")
     public String listAllNotes(@RequestParam(required = false) Notes.NoteStatus status,

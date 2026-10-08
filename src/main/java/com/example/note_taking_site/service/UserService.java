@@ -3,6 +3,7 @@ package com.example.note_taking_site.service;
 import com.example.note_taking_site.dto.RegisterRequest;
 import com.example.note_taking_site.exception.UserAlreadyExistsException;
 import com.example.note_taking_site.model.User;
+import com.example.note_taking_site.repository.ProductRepository;
 import com.example.note_taking_site.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,13 +18,16 @@ public class UserService {
     private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
     private final UserRepository userRepository;
+    private final ProductRepository productRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository,
+                       ProductRepository productRepository,
+                       PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.productRepository = productRepository;
         this.passwordEncoder = passwordEncoder;
     }
-
 
     public User register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -37,7 +41,6 @@ public class UserService {
         return userRepository.save(user);
     }
 
-
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
@@ -47,7 +50,6 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("User not found: " + id));
     }
 
-
     public void changeRole(Long id, User.Role role) {
         User user = getById(id);
         user.setRole(role);
@@ -55,9 +57,10 @@ public class UserService {
         log.info("Changing role of user id={} to {}", id, role);
     }
 
-
     public void deleteUser(Long id) {
-        userRepository.deleteById(id);
-        log.info("Deleting user id={}", id);
+        User user = getById(id);
+        productRepository.deleteAllByAuthor(user);
+        userRepository.delete(user);
+        log.info("Deleting user id={} and all their notes", id);
     }
 }

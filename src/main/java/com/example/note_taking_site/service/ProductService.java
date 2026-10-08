@@ -25,11 +25,11 @@ public class ProductService {
 
     public Notes createNote(NoteRequest request, User author) {
         Notes note = new Notes();
-        note.setName(request.getName());
-        note.setDescription(request.getDescription());
+        note.setTitle(request.getTitle());
+        note.setContent(request.getContent());
         note.setAuthor(author);
         note.setStatus(Notes.NoteStatus.ACTIVE);
-        log.info("Creating note '{}' for user {}", request.getName(), author.getEmail());
+        log.info("Creating note '{}' for user {}", request.getTitle(), author.getEmail());
         return productRepository.save(note);
     }
 
@@ -40,10 +40,6 @@ public class ProductService {
 
     public List<Notes> getActiveNotes(User author) {
         return productRepository.findAllByAuthorAndStatusOrderByUpdatedAtDesc(author, Notes.NoteStatus.ACTIVE);
-    }
-
-    public List<Notes> getDraftNotes(User author) {
-        return productRepository.findAllByAuthorAndStatusOrderByUpdatedAtDesc(author, Notes.NoteStatus.DRAFT);
     }
 
     public List<Notes> getDeletedNotes(User author) {
@@ -67,8 +63,8 @@ public class ProductService {
     public void updateNote(Long id, NoteRequest request, User author) {
         Notes note = productRepository.findByIdAndAuthor(id, author)
                 .orElseThrow(() -> new NoteNotFoundException(id));
-        note.setName(request.getName());
-        note.setDescription(request.getDescription());
+        note.setTitle(request.getTitle());
+        note.setContent(request.getContent());
         productRepository.save(note);
         log.info("Updating note id={} by user {}", id, author.getEmail());
     }
@@ -89,14 +85,6 @@ public class ProductService {
         log.info("Restoring note id={} from trash by user {}", id, author.getEmail());
     }
 
-    public void moveToDraft(Long id, User author) {
-        Notes note = productRepository.findByIdAndAuthor(id, author)
-                .orElseThrow(() -> new NoteNotFoundException(id));
-        note.setStatus(Notes.NoteStatus.DRAFT);
-        productRepository.save(note);
-        log.info("Moving note id={} to draft by user {}", id, author.getEmail());
-    }
-
 
     public void deletePermanently(Long id, User author) {
         Notes note = productRepository.findByIdAndAuthor(id, author)
@@ -108,5 +96,11 @@ public class ProductService {
     public void deletePermanentlyAdmin(Long id) {
         productRepository.deleteById(id);
         log.info("Permanently deleting note id={} by admin", id);
+    }
+
+    public void clearTrash(User author) {
+        List<Notes> deleted = getDeletedNotes(author);
+        productRepository.deleteAll(deleted);
+        log.info("Cleared trash for user {}, deleted {} notes", author.getEmail(), deleted.size());
     }
 }
