@@ -41,11 +41,11 @@ public class NotesController {
                 .orElseThrow(() -> new IllegalStateException("Authenticated user not found in DB"));
     }
 
-    @GetMapping("/notes")
+    @GetMapping({"/", "/notes"})
     public String listActive(Authentication auth, Model model) {
         User user = currentUser(auth);
         model.addAttribute("notes", notesService.getActiveNotes(user));
-        return "notes-list";
+        return "index";
     }
 
     @GetMapping("/trash")
