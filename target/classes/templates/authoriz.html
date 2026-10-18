@@ -1,63 +1,64 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/css/bootstrap.css">
-    <link rel="stylesheet" href="style.css">
-    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+          crossorigin="anonymous">
+    <title>Авторизация — Заметки</title>
+    <style>
+        .font-cursive { font-family: cursive; }
+    </style>
 </head>
-<body>
-<header class="header">
-    <div class="section">
+<body class="d-flex flex-column min-vh-100">
 
-        <div class="headerflex">
-            <a href="index.html" class="title ahref">Заметки</a>
-            <div class="headerflex2">
-                <a href="trashCan.html" class="ahref2">корзина</a>
-                <a href="authoriz.html" class="ahref2">войти</a>
-            </div>
+<header class="bg-secondary text-white py-3">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center">
+            <a href="/" class="text-white text-decoration-none font-cursive fs-1">Заметки</a>
+            <nav class="d-flex gap-4">
+                <a href="/trash" class="text-white text-decoration-none font-cursive fs-5">корзина</a>
+                <a href="/login" class="text-white text-decoration-none font-cursive fs-5 text-decoration-underline">войти</a>
+            </nav>
         </div>
-
     </div>
 </header>
 
-<div class="section">
-    <form>
-        <div class="mb-3 textcursive">
-            <label for="exampleInputEmail1" class="form-label" >Адрес электронной почты</label>
-            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+<main class="container flex-grow-1 d-flex justify-content-center align-items-center py-5">
+    <form th:action="@{/login}" method="post" class="w-100" style="max-width: 500px;">
+
+        <div class="mb-3 font-cursive">
+            <label for="exampleInputEmail1" class="form-label">Адрес электронной почты</label>
+            <input type="email" name="username" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
             <div id="emailHelp" class="form-text">Мы никогда никому не передадим вашу электронную почту.</div>
         </div>
-        <div class="mb-3 textcursive">
+
+        <div class="mb-3 font-cursive">
             <label for="exampleInputPassword1" class="form-label">Пароль</label>
-            <input type="password" class="form-control" id="exampleInputPassword1">
+            <input type="password" name="password" class="form-control" id="exampleInputPassword1">
         </div>
-        <div class="mb-3 form-check textcursive">
+
+        <div class="mb-3 form-check font-cursive">
             <input type="checkbox" class="form-check-input" id="exampleCheck1">
             <label class="form-check-label" for="exampleCheck1">Проверить меня</label>
         </div>
-        <button type="submit" class="btn btn-secondary textcursive">Отправить</button>
+
+        <button type="submit" class="btn btn-secondary font-cursive">Отправить</button>
     </form>
-</div>
+</main>
 
-<footer class="footer">
-    <div class="section">
-        <div class="footertext">Контактная информация</div>
-
-        <div class="footerflex">
-            <div class="footerbox">
-                8 (800) 600-86-76<br>
-                8 (800) 600-86-76
-            </div>
-            <div class="footerbox">
-                СПбУТУиЭ
-            </div>
-            <div class="footerbox">
-                © 2026 NoteTaking
-            </div>
+<footer class="bg-secondary text-white py-4 mt-auto">
+    <div class="container">
+        <div class="font-cursive fs-5 mb-2">Контактная информация</div>
+        <div class="row text-center font-cursive">
+            <div class="col">8 (800) 600-86-76<br>8 (800) 600-86-76</div>
+            <div class="col">СПбУТУиЭ</div>
+            <div class="col">© 2026 NoteTaking</div>
         </div>
     </div>
 </footer>
+
 </body>
 </html>
