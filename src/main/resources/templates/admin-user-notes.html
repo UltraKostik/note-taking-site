@@ -1,0 +1,48 @@
+html
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Заметки пользователя</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container py-4">
+    <h1>Заметки пользователя: <span th:text="${targetUser.email}"></span></h1>
+    <a th:href="@{/admin}" class="btn btn-secondary mb-3">Назад к пользователям</a>
+
+    <div th:if="${#lists.isEmpty(notes)}" class="alert alert-info">
+        У этого пользователя нет заметок
+    </div>
+
+    <table class="table" th:unless="${#lists.isEmpty(notes)}">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Заголовок</th>
+            <th>Статус</th>
+            <th>Дата</th>
+            <th>Действия</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="note : ${notes}">
+            <td th:text="${note.id}"></td>
+            <td th:text="${note.title}"></td>
+            <td th:text="${note.status}"></td>
+            <td th:text="${#temporals.format(note.updatedAt, 'dd.MM.yyyy HH:mm')}"></td>
+            <td>
+                <a th:href="@{/admin/notes/{id}/edit(id=${note.id}, userId=${targetUser.id})}"
+                   class="btn btn-sm btn-outline-primary">Редактировать</a>
+
+                <form th:action="@{/admin/notes/{id}/delete(id=${note.id}, userId=${targetUser.id})}"
+                      method="post" class="d-inline">
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

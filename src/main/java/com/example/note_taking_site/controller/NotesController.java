@@ -55,46 +55,50 @@ public class NotesController {
         return "trash";
     }
 
-    @GetMapping({"/notes/add", "/notes/edit/{id}"})
-    public String form(@PathVariable(required = false) Long id,
-                       Authentication auth,
-                       Model model) {
-        NoteRequest request = new NoteRequest();
-        if (id != null) {
-            try {
-                Notes note = notesService.getNoteById(id, currentUser(auth));
-                request.setTitle(note.getTitle());
-                request.setContent(note.getContent());
-                note.getAttachments().size(); // Force init LAZY
-                model.addAttribute("note", note);
-            } catch (Exception e) {
-                return "redirect:/notes";
-            }
-        }
-        model.addAttribute("noteRequest", request);
-        model.addAttribute("noteId", id);
+    @GetMapping("/notes/add")
+    public String formAdd(Model model) {
+        model.addAttribute("noteRequest", new NoteRequest());
+        model.addAttribute("isEdit", false);
         return "note-form";
     }
 
     @PostMapping("/notes/add")
     public String add(@Valid @ModelAttribute("noteRequest") NoteRequest request,
                       BindingResult bindingResult,
-                      Authentication auth) {
+                      Authentication auth,
+                      Model model) {
         if (bindingResult.hasErrors()) {
+            model.addAttribute("isEdit", false);
             return "note-form";
         }
+
         notesService.createNote(request, currentUser(auth));
         return "redirect:/notes";
     }
 
     @GetMapping("/notes/{id}")
-    public String view(@PathVariable Long id, Authentication auth) {
-        try {
-            notesService.getNoteById(id, currentUser(auth));
-            return "redirect:/notes/edit/" + id;
-        } catch (Exception e) {
-            return "redirect:/notes";
-        }
+    public String view(@PathVariable Long id, Authentication auth, Model model) {
+        Notes note = notesService.getNoteById(id, currentUser(auth));
+        note.getAttachments().size();
+        model.addAttribute("note", note);
+        return "note-view";
+    }
+
+    @GetMapping("/notes/edit/{id}")
+    public String formEdit(@PathVariable Long id,
+                           Authentication auth,
+                           Model model) {
+        Notes note = notesService.getNoteById(id, currentUser(auth));
+
+        NoteRequest request = new NoteRequest();
+        request.setTitle(note.getTitle());
+        request.setContent(note.getContent());
+
+        model.addAttribute("noteRequest", request);
+        model.addAttribute("noteId", id);
+        model.addAttribute("isEdit", true);
+
+        return "note-form";
     }
 
     @PostMapping("/notes/edit/{id}")
@@ -105,6 +109,7 @@ public class NotesController {
                        Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("noteId", id);
+            model.addAttribute("isEdit", true);
             return "note-form";
         }
         try {

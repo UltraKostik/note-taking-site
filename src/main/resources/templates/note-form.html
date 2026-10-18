@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${noteId == null} ? 'Новая заметка' : 'Редактирование заметки'"></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+</head>
+<body>
+<div class="container py-4">
+    <h1 th:text="${noteId == null} ? 'Новая заметка' : 'Редактирование заметки'"></h1>
+
+    <form th:action="${isAdminEdit != null and isAdminEdit}
+                     ? @{/admin/notes/{id}/edit(id=${noteId}, userId=${userId})}
+                     : (${noteId != null}
+                        ? @{/notes/edit/{id}(id=${noteId})}
+                        : @{/notes/add})"
+          method="post">
+
+        <div class="mb-3">
+            <label class="form-label">Заголовок</label>
+            <input type="text" th:field="*{title}" class="form-control"/>
+            <span th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Содержимое</label>
+            <textarea th:field="*{content}" class="form-control" rows="6"></textarea>
+            <span th:if="${#fields.hasErrors('content')}" th:errors="*{content}" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary" th:text="${noteId == null} ? 'Создать' : 'Сохранить'"></button>
+        <a th:href="${isAdminEdit != null and isAdminEdit} ? @{/admin/users/{id}/notes(id=${userId})} : @{/notes}"
+           class="btn btn-secondary">Отмена</a>
+    </form>
+
+    <div th:if="${note != null}" class="mt-5 border-top pt-4">
+        <h3>Вложения</h3>
+
+        <div id="drop-zone" class="border border-2 border-dashed p-4 text-center mb-3 bg-light" style="cursor: pointer;">
+            Перетащите файлы сюда или нажмите для выбора
+            <input type="file" id="file-input" multiple hidden>
+        </div>
+
+        <ul class="list-group">
+            <li class="list-group-item d-flex justify-content-between align-items-center" th:each="att : ${note.attachments}">
+                <div>
+                    <a th:href="@{/notes/{id}/files/{fid}(id=${note.id}, fid=${att.id})}" th:text="${att.fileName}"></a>
+                    <span class="text-muted small">(<span th:text="${att.size}"></span> байт)</span>
+                </div>
+                <form th:action="@{/notes/{id}/files/{fid}/delete(id=${note.id}, fid=${att.id})}" method="post">
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
+                </form>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    const noteId = /*[[${note != null ? note.id : null}]]*/ null;
+    if (noteId !== null) {
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+
+        dropZone.addEventListener('click', () => fileInput.click());
+        dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('bg-secondary', 'text-white'); });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('bg-secondary', 'text-white'));
+        dropZone.addEventListener('drop', async e => {
+            e.preventDefault();
+            dropZone.classList.remove('bg-secondary', 'text-white');
+            await uploadFiles(e.dataTransfer.files);
+        });
+        fileInput.addEventListener('change', () => uploadFiles(fileInput.files));
+
+        async function uploadFiles(files) {
+            const formData = new FormData();
+            for (const f of files) formData.append('file', f);
+
+            const csrf = document.querySelector('meta[name="_csrf"]').content;
+            const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+
+            const resp = await fetch(`/notes/${noteId}/files`, {
+                method: 'POST',
+                body: formData,
+                headers: { [csrfHeader]: csrf }
+            });
+            if (resp.ok || resp.redirected) location.reload();
+            else alert('Ошибка загрузки файла');
+        }
+    }
+</script>
+</body>
+</html>
