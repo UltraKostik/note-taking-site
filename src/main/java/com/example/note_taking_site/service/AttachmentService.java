@@ -22,7 +22,7 @@ public class AttachmentService {
         this.attachmentRepository = attachmentRepository;
     }
 
-    public Attachment save(MultipartFile file, Notes note) throws IOException {
+    public void save(MultipartFile file, Notes note) throws IOException {
         Attachment attachment = new Attachment();
         attachment.setFileName(file.getOriginalFilename() == null
                 ? "file" : file.getOriginalFilename());
@@ -32,7 +32,7 @@ public class AttachmentService {
         attachment.setNote(note);
         log.info("Saving attachment '{}' ({} bytes) for note id={}",
                 attachment.getFileName(), attachment.getSize(), note.getId());
-        return attachmentRepository.save(attachment);
+        attachmentRepository.save(attachment);
     }
 
     public List<Attachment> getAllByNote(Notes note) {
