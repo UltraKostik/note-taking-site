@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+            crossorigin="anonymous"
+        />
+        <link
+            rel="icon"
+            type="image/svg+xml"
+            th:href="@{/images/icon.svg}"
+            href="/images/icon.svg"
+        />
+        <title>Админка</title>
+        <style>
+            body {
+                background-color: #2b1f1d;
+                font-family: "Courier New", Courier, monospace;
+                color: #2b2b2b;
+            }
+
+            header.bg-secondary {
+                background-color: #3a4d5c;
+                border-bottom: 3px double #1a2630;
+                z-index: 10;
+            }
+
+            nav a:hover {
+                text-decoration: underline !important;
+            }
+
+            .wood-table-container {
+                max-width: 1200px;
+                margin: 40px auto;
+                padding: 40px;
+                background-color: #8a5a36;
+                background-image: url(/images/table.avif);
+                background-repeat: no-repeat;
+                background-size: 100% 100%;
+                border-radius: 10%;
+                box-shadow:
+                    inset 0 0 40px rgba(0, 0, 0, 0.6),
+                    0 20px 50px rgba(0, 0, 0, 0.8);
+                position: relative;
+            }
+
+            .stat-card {
+                background-color: #fffde8;
+                border: 1px solid #9c8a70;
+                border-radius: 4px;
+                padding: 1.5rem;
+                text-align: center;
+                box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.3);
+            }
+
+            .admin-panel-wrapper {
+                background-color: #fffde8;
+                border: 1px solid #9c8a70;
+                border-radius: 4px;
+                padding: 1.5rem;
+                box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.3);
+            }
+
+            .admin-title {
+                color: #fffde8;
+                text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.4);
+                font-size: calc(1.375rem + 1.5vw);
+                text-align: left;
+                line-height: 1.2;
+            }
+
+            .table thead th {
+                color: #1a365d;
+                border-bottom: 2px solid #9c8a70;
+                background-color: transparent;
+            }
+
+            .table tbody tr:hover {
+                background-color: rgba(255, 253, 232, 0.6);
+            }
+
+            .btn-retro-outline {
+                border: 2px solid #5a5a5a;
+                background-color: #f0edf5;
+                color: #2b2b2b;
+                border-radius: 2px;
+                font-weight: bold;
+                box-shadow: 2px 2px 0px #000;
+                font-family: "Courier New", Courier, monospace;
+            }
+
+            .btn-retro-outline:hover {
+                background-color: #e2dee9;
+                transform: translate(1px, 1px);
+                box-shadow: 1px 1px 0px #000;
+            }
+
+            footer.bg-secondary {
+                background-color: #2d3748;
+                border-top: 2px solid #1a202c;
+                font-size: 0.9rem;
+                z-index: 10;
+            }
+        </style>
+    </head>
+
+    <body class="d-flex flex-column min-vh-100">
+        <header class="bg-secondary text-white py-3">
+            <div class="container">
+                <div class="d-flex justify-content-between align-items-center">
+                    <a
+                        href="/"
+                        class="text-white text-decoration-none fw-bold fs-2"
+                        >Заметки</a
+                    >
+                    <nav class="d-flex gap-4">
+                        <a
+                            href="/admin"
+                            class="text-white text-decoration-none fs-5"
+                            >Админка</a
+                        >
+                        <a
+                            href="/trash"
+                            class="text-white text-decoration-none fs-5"
+                            >Корзина</a
+                        >
+                    </nav>
+                </div>
+            </div>
+        </header>
+
+        <main class="container flex-grow-1 wood-table-container py-4">
+            <h1 class="admin-title mb-4 fw-bold">Панель администратора</h1>
+
+            <div class="row g-4 mb-5">
+                <div class="col-md-4">
+                    <div class="stat-card h-100">
+                        <div class="small text-muted mb-2">Пользователи</div>
+                        <div class="fs-4 fw-bold" th:text="${totalUsers}">
+                            150
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card h-100">
+                        <div class="small text-muted mb-2">Всего заметок</div>
+                        <div class="fs-4 fw-bold" th:text="${totalNotes}">
+                            1 420
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card h-100">
+                        <div class="small text-muted mb-2">В корзине</div>
+                        <div class="fs-4 fw-bold" th:text="${trashNotesCount}">
+                            84
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-panel-wrapper">
+                <h3
+                    class="fw-bold mb-3"
+                    style="
+                        color: #1a365d;
+                        text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.2);
+                    "
+                >
+                    Управление пользователями
+                </h3>
+                <div class="table-responsive">
+                    <table class="table table-striped align-middle m-0">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Email / Логин</th>
+                                <th>Роль</th>
+                                <th class="text-end">Действие</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="user : ${usersList}">
+                                <td th:text="${user.id}">1</td>
+                                <td>
+                                    <a th:href="@{/admin/users/{id}/notes(id=${user.id})}"
+                                       th:text="${user.email}"
+                                       class="text-decoration-none fw-bold"></a>
+                                </td>
+                                <td>
+                                    <span
+                                        class="badge bg-secondary text-uppercase"
+                                        th:text="${user.role}"
+                                        >USER</span
+                                    >
+                                </td>
+                                <td class="text-end">
+                                    <form
+                                        th:action="@{/admin/users/ban/{id}(id=${user.id})}"
+                                        th:method="post"
+                                        class="d-inline"
+                                    >
+                                        <button
+                                            type="submit"
+                                            class="btn btn-retro-outline btn-sm"
+                                        >
+                                            Забанить
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+
+        <footer class="bg-secondary text-white py-4 mt-auto">
+            <div class="container">
+                <div class="text-white fs-5 mb-2 fw-bold text-center">
+                    Системная информация:
+                </div>
+                <div class="row text-center">
+                    <div class="col">Тел: 8 (800) 600-86-76</div>
+                    <div class="col">СПбУТУиЭ</div>
+                    <div class="col">© 2026 NoteTaking OS</div>
+                </div>
+            </div>
+        </footer>
+    </body>
+</html>

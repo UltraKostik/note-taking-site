@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+            crossorigin="anonymous"
+        />
+        <link
+            rel="icon"
+            type="image/svg+xml"
+            th:href="@{/images/icon.svg}"
+            href="/images/icon.svg"
+        />
+        <title>Авторизация</title>
+        <style>
+            body {
+                background-color: #2b1f1d;
+                font-family: "Courier New", Courier, monospace;
+                color: #2b2b2b;
+            }
+
+            header.bg-secondary {
+                background-color: #3a4d5c;
+                border-bottom: 3px double #1a2630;
+                z-index: 10;
+            }
+
+            nav a:hover {
+                text-decoration: underline !important;
+            }
+
+            .wood-table-container {
+                max-width: 1200px;
+                margin: 40px auto;
+                padding: 40px;
+                background-color: #8a5a36;
+                background-image: url(/images/table.avif);
+                background-repeat: no-repeat;
+                background-size: 100% 100%;
+                border-radius: 10%;
+                box-shadow:
+                    inset 0 0 40px rgba(0, 0, 0, 0.6),
+                    0 20px 50px rgba(0, 0, 0, 0.8);
+                position: relative;
+            }
+
+            .login-card {
+                background-color: #fffde8;
+                background-image: url(/images/paper.jpg);
+                background-size: 20px 20px;
+                border: 2px solid #9c8a70;
+                border-radius: 4px;
+                box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.4);
+                padding: 2rem;
+            }
+
+            .btn-retro-dark {
+                border: 2px solid #000;
+                background-color: #222;
+                color: #fff;
+                border-radius: 2px;
+                box-shadow: 4px 4px 0px #111;
+                font-weight: bold;
+                font-family: "Courier New", Courier, monospace;
+            }
+
+            .btn-retro-dark:hover {
+                background-color: #000;
+                box-shadow: 2px 2px 0px #111;
+                transform: translate(1px, 1px);
+            }
+
+            .form-label,
+            .form-text,
+            .form-check-label {
+                color: #1a365d;
+                font-family: "Courier New", Courier, monospace;
+            }
+
+            .form-control {
+                border: 1px solid #9c8a70;
+                border-radius: 2px;
+                font-family: "Courier New", Courier, monospace;
+                background-color: #fffde8;
+            }
+
+            .form-control:focus {
+                border-color: #5a5a5a;
+                box-shadow: 0 0 0 0.25rem rgba(90, 90, 90, 0.25);
+            }
+
+            footer.bg-secondary {
+                background-color: #2d3748;
+                border-top: 2px solid #1a202c;
+                font-size: 0.9rem;
+                z-index: 10;
+            }
+        </style>
+    </head>
+
+    <body class="d-flex flex-column min-vh-100">
+        <header class="bg-secondary text-white py-3">
+            <div class="container">
+                <div class="d-flex justify-content-between align-items-center">
+                    <a
+                        href="/"
+                        class="text-white text-decoration-none fw-bold fs-2"
+                        >Заметки</a
+                    >
+                    <nav class="d-flex gap-4">
+                        <a
+                            href="/trash"
+                            class="text-white text-decoration-none fs-5"
+                            >Корзина</a
+                        >
+                        <a
+                            href="/login"
+                            class="text-white text-decoration-none fs-5 text-decoration-underline"
+                            >Войти</a
+                        >
+                    </nav>
+                </div>
+            </div>
+        </header>
+
+        <main
+            class="container flex-grow-1 wood-table-container d-flex justify-content-center align-items-center py-5"
+        >
+            <form
+                th:action="@{/login}"
+                method="post"
+                class="w-100 login-card"
+                style="max-width: 500px"
+            >
+                <h2
+                    class="fw-bold mb-4 text-center"
+                    style="
+                        text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.4);
+                        color: #1a365d;
+                    "
+                >
+                    Вход в систему
+                </h2>
+
+                <div class="mb-4">
+                    <label for="exampleInputEmail1" class="form-label"
+                        >Адрес электронной почты</label
+                    >
+                    <input
+                        type="email"
+                        name="username"
+                        class="form-control"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                    />
+                    <div id="emailHelp" class="form-text">
+                        Мы никогда никому не передадим вашу электронную почту.
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="exampleInputPassword1" class="form-label"
+                        >Пароль</label
+                    >
+                    <input
+                        type="password"
+                        name="password"
+                        class="form-control"
+                        id="exampleInputPassword1"
+                    />
+                </div>
+
+                <div class="mb-4 form-check">
+                    <input
+                        type="checkbox"
+                        class="form-check-input"
+                        id="exampleCheck1"
+                    />
+                    <label class="form-check-label" for="exampleCheck1"
+                        >Запомнить меня</label
+                    >
+                </div>
+
+                <button type="submit" class="btn btn-retro-dark w-100">
+                    Войти
+                </button>
+            </form>
+        </main>
+
+        <footer class="bg-secondary text-white py-4 mt-auto">
+            <div class="container">
+                <div class="text-white fs-5 mb-2 fw-bold text-center">
+                    Системная информация:
+                </div>
+                <div class="row text-center">
+                    <div class="col">Тел: 8 (800) 600-86-76</div>
+                    <div class="col">СПбУТУиЭ</div>
+                    <div class="col">© 2026 NoteTaking OS</div>
+                </div>
+            </div>
+        </footer>
+    </body>
+</html>

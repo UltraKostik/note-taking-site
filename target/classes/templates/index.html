@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+            crossorigin="anonymous"
+        />
+        <link
+            rel="icon"
+            type="image/svg+xml"
+            th:href="@{/images/icon.svg}"
+            href="/images/icon.svg"
+        />
+        <title>Заметки</title>
+        <style>
+            body {
+                background-color: #2b1f1d;
+                font-family: "Courier New", Courier, monospace;
+                color: #2b2b2b;
+            }
+
+            header.bg-secondary {
+                background-color: #3a4d5c;
+                border-bottom: 3px double #1a2630;
+                z-index: 10;
+            }
+
+            nav a:hover {
+                text-decoration: underline !important;
+            }
+
+            .wood-table-container {
+                max-width: 1200px;
+                margin: 40px auto;
+                padding: 40px;
+                background-color: #8a5a36;
+                background-image: url(/images/table.avif);
+                background-repeat: no-repeat;
+                background-size: 100% 100%;
+                border-radius: 10%;
+                box-shadow:
+                    inset 0 0 40px rgba(0, 0, 0, 0.6),
+                    0 20px 50px rgba(0, 0, 0, 0.8);
+                position: relative;
+            }
+
+            .notepad-card {
+                background-color: #fffde8;
+                background-image: url(/images/paper.jpg);
+                background-size: 20px 20px;
+                border: 2px solid #9c8a70;
+                border-radius: 4px;
+                box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.4);
+                transition:
+                    transform 0.2s ease,
+                    box-shadow 0.2s ease;
+            }
+
+            .row > .col:nth-child(odd) .notepad-card {
+                transform: rotate(-1.5deg);
+            }
+
+            .row > .col:nth-child(even) .notepad-card {
+                transform: rotate(1.5deg);
+            }
+
+            .row > .col:nth-child(3n) .notepad-card {
+                transform: rotate(0.8deg) translateY(-5px);
+            }
+
+            .notepad-card:hover {
+                transform: scale(1.03) rotate(0deg);
+                box-shadow: 10px 15px 25px rgba(0, 0, 0, 0.5);
+                z-index: 5;
+            }
+
+            .card-title {
+                color: #1a365d;
+                border-bottom: 1px solid rgba(255, 0, 0, 0.2);
+                padding-bottom: 4px;
+            }
+
+            .btn-retro-outline {
+                border: 2px solid #5a5a5a;
+                background-color: #f0edf5;
+                color: #2b2b2b;
+                border-radius: 2px;
+                font-weight: bold;
+                box-shadow: 2px 2px 0px #000;
+            }
+
+            .btn-retro-outline:hover {
+                background-color: #e2dee9;
+                transform: translate(1px, 1px);
+                box-shadow: 1px 1px 0px #000;
+            }
+
+            .btn-retro-dark {
+                border: 2px solid #000;
+                background-color: #222;
+                color: #fff;
+                border-radius: 2px;
+                box-shadow: 4px 4px 0px #111;
+                font-weight: bold;
+            }
+
+            .btn-retro-dark:hover {
+                background-color: #000;
+                box-shadow: 2px 2px 0px #111;
+                transform: translate(1px, 1px);
+            }
+
+            .btn-retro-danger {
+                border: 2px solid #000;
+                background-color: #dc3545;
+                color: #fff;
+                border-radius: 2px;
+                box-shadow: 4px 4px 0px #58151c;
+                font-weight: bold;
+            }
+
+            .btn-retro-danger:hover {
+                background-color: #bb2d3b;
+                box-shadow: 2px 2px 0px #58151c;
+                transform: translate(1px, 1px);
+            }
+
+            footer.bg-secondary {
+                background-color: #2d3748;
+                border-top: 2px solid #1a202c;
+                font-size: 0.9rem;
+                z-index: 10;
+            }
+        </style>
+    </head>
+
+    <body class="d-flex flex-column min-vh-100">
+        <header class="bg-secondary text-white py-3">
+            <div class="container">
+                <div class="d-flex justify-content-between align-items-center">
+                    <a
+                        href="/"
+                        class="text-white text-decoration-none fw-bold fs-2"
+                        >Заметки</a
+                    >
+                    <nav class="d-flex gap-4">
+                        <a
+                            href="/trash"
+                            class="text-white text-decoration-none fs-5"
+                            >Корзина</a
+                        >
+                        <a
+                            href="/profile"
+                            class="text-white text-decoration-none fs-5"
+                            >Профиль</a
+                        >
+                        <a
+                            href="/login"
+                            class="text-white text-decoration-none fs-5"
+                            >Войти</a
+                        >
+                    </nav>
+                </div>
+            </div>
+        </header>
+        <main class="container flex-grow-1 wood-table-container">
+            <h1
+                class="fw-bold mb-4 text-center"
+                style="
+                    text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.4);
+                    color: #fffde8;
+                    font-size: calc(1.375rem + 1.5vw);
+                "
+            >
+                Мои заметки
+            </h1>
+
+            <div class="row row-cols-1 row-cols-md-3 g-5">
+                <div class="col" th:each="note : \${notes}">
+                    <div class="card h-100 notepad-card">
+                        <div class="card-body text-center">
+                            <h5
+                                class="card-title fw-bold"
+                                th:text="\${note.title}"
+                            >
+                                Название заметки
+                            </h5>
+                            <p
+                                class="card-text pt-2"
+                                style="line-height: 20px; color: #5a5a5a"
+                                th:text="\${note.content}"
+                            >
+                                Текст заметки...
+                            </p>
+                        </div>
+                        <div
+                            class="card-footer bg-transparent border-top-0 d-flex justify-content-center gap-2 pb-3"
+                        >
+                            <a
+                                th:href="@{/notes/edit/{id}(id=\${note.id})}"
+                                class="btn btn-retro-outline btn-sm px-2"
+                            >
+                                Редактировать
+                            </a>
+                            <form
+                                th:action="@{/notes/delete/{id}(id=\${note.id})}"
+                                th:method="post"
+                            >
+                                <button
+                                    type="submit"
+                                    class="btn btn-retro-danger btn-sm px-2"
+                                >
+                                    Удалить
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-5">
+                <a
+                    th:href="@{/notes/add}"
+                    class="btn btn-retro-dark px-4 py-2 fs-5"
+                >
+                    + Добавить заметку
+                </a>
+            </div>
+        </main>
+        <footer class="bg-secondary text-white py-4 mt-auto">
+            <div class="container">
+                <div class="text-white fs-5 mb-2 fw-bold text-center">
+                    Системная информация:
+                </div>
+                <div class="row text-center">
+                    <div class="col">Тел: 8 (800) 600-86-76</div>
+                    <div class="col">СПбУТУиЭ</div>
+                    <div class="col">© 2026 NoteTaking OS</div>
+                </div>
+            </div>
+        </footer>
+    </body>
+</html>
