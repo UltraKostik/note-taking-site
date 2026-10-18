@@ -1,176 +1,94 @@
-
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <link
-            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-            rel="stylesheet"
-    >
-
-    <title th:text="${isEdit} ? 'Редактирование заметки' : 'Новая заметка'">
-        Заметка
-    </title>
-
-    <style>
-        body {
-            background-color: #2b1f1d;
-            font-family: "Courier New", Courier, monospace;
-        }
-
-        header {
-            background-color: #3a4d5c;
-            border-bottom: 3px double #1a2630;
-        }
-
-        .wood-container {
-            max-width: 850px;
-            margin: 40px auto;
-            padding: 35px;
-            background-color: #8a5a36;
-            background-image: url('/images/table.avif');
-            background-repeat: no-repeat;
-            background-size: 100% 100%;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
-        }
-
-        .note-paper {
-            background-color: #fffde8;
-            background-image: url('/images/paper.jpg');
-            border: 2px solid #9c8a70;
-            padding: 30px;
-            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.4);
-        }
-
-        .form-control {
-            border: 1px solid #9c8a70;
-            border-radius: 2px;
-            font-family: "Courier New", Courier, monospace;
-            background-color: #fffde8;
-        }
-
-        .form-label {
-            color: #1a365d;
-            font-weight: bold;
-        }
-
-        .btn-retro {
-            border: 2px solid #000;
-            background-color: #222;
-            color: white;
-            border-radius: 2px;
-            box-shadow: 3px 3px 0 #111;
-            font-weight: bold;
-            font-family: "Courier New", Courier, monospace;
-        }
-
-        .btn-retro:hover {
-            background-color: #000;
-            color: white;
-        }
-
-        footer {
-            background-color: #2d3748;
-            border-top: 2px solid #1a202c;
-        }
-    </style>
+    <title th:text="${noteId == null} ? 'Новая заметка' : 'Редактирование заметки'"></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 </head>
+<body>
+<div class="container py-4">
+    <h1 th:text="${noteId == null} ? 'Новая заметка' : 'Редактирование заметки'"></h1>
 
-<body class="d-flex flex-column min-vh-100">
+    <form th:action="${isAdminEdit != null and isAdminEdit}
+                     ? @{/admin/notes/{id}/edit(id=${noteId}, userId=${userId})}
+                     : (${noteId != null}
+                        ? @{/notes/edit/{id}(id=${noteId})}
+                        : @{/notes/add})"
+          method="post">
 
-<header class="text-white py-3">
-    <div class="container d-flex justify-content-between align-items-center">
-        <a href="/notes"
-           class="text-white text-decoration-none fw-bold fs-2">
-            Заметки
-        </a>
+        <div class="mb-3">
+            <label class="form-label">Заголовок</label>
+            <input type="text" th:field="*{title}" class="form-control"/>
+            <span th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="text-danger"></span>
+        </div>
 
-        <a href="/notes"
-           class="text-white text-decoration-none">
-            Назад к заметкам
-        </a>
-    </div>
-</header>
+        <div class="mb-3">
+            <label class="form-label">Содержимое</label>
+            <textarea th:field="*{content}" class="form-control" rows="6"></textarea>
+            <span th:if="${#fields.hasErrors('content')}" th:errors="*{content}" class="text-danger"></span>
+        </div>
 
-<main class="container flex-grow-1 wood-container">
-    <div class="note-paper">
+        <button type="submit" class="btn btn-primary" th:text="${noteId == null} ? 'Создать' : 'Сохранить'"></button>
+        <a th:href="${isAdminEdit != null and isAdminEdit} ? @{/admin/users/{id}/notes(id=${userId})} : @{/notes}"
+           class="btn btn-secondary">Отмена</a>
+    </form>
 
-        <h2 class="text-center fw-bold mb-4"
-            style="color: #1a365d"
-            th:text="${isEdit} ? 'Редактирование заметки' : 'Новая заметка'">
-            Новая заметка
-        </h2>
+    <div th:if="${note != null}" class="mt-5 border-top pt-4">
+        <h3>Вложения</h3>
 
-        <form
-                th:action="${isEdit}
-                ? @{/notes/edit/{id}(id=${noteId})}
-                : @{/notes/add}"
-                th:object="${noteRequest}"
-                method="post">
+        <div id="drop-zone" class="border border-2 border-dashed p-4 text-center mb-3 bg-light" style="cursor: pointer;">
+            Перетащите файлы сюда или нажмите для выбора
+            <input type="file" id="file-input" multiple hidden>
+        </div>
 
-            <div class="mb-4">
-                <label for="title" class="form-label">
-                    Название заметки
-                </label>
-
-                <input
-                        type="text"
-                        id="title"
-                        th:field="*{title}"
-                        class="form-control"
-                        placeholder="Введите название заметки"
-                        maxlength="200"
-                        required
-                >
-
-                <div class="text-danger mt-1"
-                     th:if="${#fields.hasErrors('title')}"
-                     th:errors="*{title}">
+        <ul class="list-group">
+            <li class="list-group-item d-flex justify-content-between align-items-center" th:each="att : ${note.attachments}">
+                <div>
+                    <a th:href="@{/notes/{id}/files/{fid}(id=${note.id}, fid=${att.id})}" th:text="${att.fileName}"></a>
+                    <span class="text-muted small">(<span th:text="${att.size}"></span> байт)</span>
                 </div>
-            </div>
-
-            <div class="mb-4">
-                <label for="content" class="form-label">
-                    Текст заметки
-                </label>
-
-                <textarea
-                        id="content"
-                        th:field="*{content}"
-                        class="form-control"
-                        rows="8"
-                        placeholder="Напишите что-нибудь..."
-                        required
-                ></textarea>
-
-                <div class="text-danger mt-1"
-                     th:if="${#fields.hasErrors('content')}"
-                     th:errors="*{content}">
-                </div>
-            </div>
-
-            <div class="d-flex justify-content-between gap-3 flex-wrap">
-                <a href="/notes" class="btn btn-outline-dark">
-                    Отмена
-                </a>
-
-                <button type="submit" class="btn btn-retro px-4"
-                        th:text="${isEdit}
-                            ? 'Сохранить изменения'
-                            : 'Создать заметку'">
-                    Создать заметку
-                </button>
-            </div>
-        </form>
+                <form th:action="@{/notes/{id}/files/{fid}/delete(id=${note.id}, fid=${att.id})}" method="post">
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
+                </form>
+            </li>
+        </ul>
     </div>
-</main>
+</div>
 
-<footer class="text-white text-center py-4 mt-auto">
-    © 2026 NoteTaking OS
-</footer>
+<script th:inline="javascript">
+    const noteId = /*[[${note != null ? note.id : null}]]*/ null;
+    if (noteId !== null) {
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
 
+        dropZone.addEventListener('click', () => fileInput.click());
+        dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('bg-secondary', 'text-white'); });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('bg-secondary', 'text-white'));
+        dropZone.addEventListener('drop', async e => {
+            e.preventDefault();
+            dropZone.classList.remove('bg-secondary', 'text-white');
+            await uploadFiles(e.dataTransfer.files);
+        });
+        fileInput.addEventListener('change', () => uploadFiles(fileInput.files));
+
+        async function uploadFiles(files) {
+            const formData = new FormData();
+            for (const f of files) formData.append('file', f);
+
+            const csrf = document.querySelector('meta[name="_csrf"]').content;
+            const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+
+            const resp = await fetch(`/notes/${noteId}/files`, {
+                method: 'POST',
+                body: formData,
+                headers: { [csrfHeader]: csrf }
+            });
+            if (resp.ok || resp.redirected) location.reload();
+            else alert('Ошибка загрузки файла');
+        }
+    }
+</script>
 </body>
 </html>

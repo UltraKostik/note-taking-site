@@ -186,7 +186,11 @@
                         <tbody>
                             <tr th:each="user : ${usersList}">
                                 <td th:text="${user.id}">1</td>
-                                <td th:text="${user.email}">user@spbutu.ru</td>
+                                <td>
+                                    <a th:href="@{/admin/users/{id}/notes(id=${user.id})}"
+                                       th:text="${user.email}"
+                                       class="text-decoration-none fw-bold"></a>
+                                </td>
                                 <td>
                                     <span
                                         class="badge bg-secondary text-uppercase"
