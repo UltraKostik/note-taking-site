@@ -1,6 +1,5 @@
 package com.example.note_taking_site.service;
 
-import com.example.note_taking_site.exception.AttachmentNotFoundException;
 import com.example.note_taking_site.model.Attachment;
 import com.example.note_taking_site.model.Notes;
 import com.example.note_taking_site.repository.AttachmentRepository;
@@ -42,12 +41,12 @@ public class AttachmentService {
 
     public Attachment getById(Long id, Notes note) {
         return attachmentRepository.findByIdAndNote(id, note)
-                .orElseThrow(() -> new AttachmentNotFoundException(id));
+                .orElseThrow(() -> new RuntimeException("Attachment not found: " + id));
     }
 
     public void delete(Long id, Notes note) {
         Attachment attachment = attachmentRepository.findByIdAndNote(id, note)
-                .orElseThrow(() -> new AttachmentNotFoundException(id));
+                .orElseThrow(() -> new RuntimeException("Attachment not found: " + id));
         attachmentRepository.delete(attachment);
         log.info("Deleting attachment id={} from note id={}", id, note.getId());
     }
