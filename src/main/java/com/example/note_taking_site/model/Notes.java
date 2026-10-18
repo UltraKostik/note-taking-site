@@ -7,9 +7,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@Table(name = "products")
+@Table(name = "notes")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -27,10 +29,10 @@ public class Notes {
     private Long id;
 
     @Column(nullable = false, length = 120)
-    private String name;
+    private String title;
 
     @Column(length = 10000)
-    private String description;
+    private String content;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
@@ -39,6 +41,9 @@ public class Notes {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "author_id", nullable = false)
     private User author;
+
+    @OneToMany(mappedBy = "note", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Attachment> attachments = new ArrayList<>();
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
