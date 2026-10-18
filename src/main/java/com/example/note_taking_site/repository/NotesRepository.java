@@ -18,4 +18,6 @@ public interface NotesRepository extends JpaRepository<Notes, Long> {
     Optional<Notes> findByIdAndAuthor(Long id, User author);
 
     void deleteAllByAuthor(User author);
+
+    List<Notes> findAllByAuthorOrderByUpdatedAtDesc(User author);
 }
