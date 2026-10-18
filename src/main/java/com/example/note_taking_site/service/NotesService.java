@@ -95,4 +95,22 @@ public class NotesService {
         notesRepository.deleteAll(deleted);
         log.info("Cleared trash for user {}, deleted {} notes", author.getEmail(), deleted.size());
     }
+
+    public List<Notes> getNotesByAuthor(User author) {
+        return notesRepository.findAllByAuthorOrderByUpdatedAtDesc(author);
+    }
+
+    public Notes getNoteByIdAdmin(Long id) {
+        return notesRepository.findById(id)
+                .orElseThrow(() -> new NoteNotFoundException(id));
+    }
+
+    public void updateNoteAdmin(Long id, NoteRequest request) {
+        Notes note = notesRepository.findById(id)
+                .orElseThrow(() -> new NoteNotFoundException(id));
+        note.setTitle(request.getTitle());
+        note.setContent(request.getContent());
+        notesRepository.save(note);
+        log.info("Admin updating note id={}", id);
+    }
 }

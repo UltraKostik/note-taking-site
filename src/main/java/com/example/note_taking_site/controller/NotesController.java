@@ -55,9 +55,24 @@ public class NotesController {
         return "trash";
     }
 
-    @GetMapping("/notes/add")
-    public String formAdd(Model model) {
-        model.addAttribute("noteRequest", new NoteRequest());
+    @GetMapping({"/notes/add", "/notes/edit/{id}"})
+    public String form(@PathVariable(required = false) Long id,
+                       Authentication auth,
+                       Model model) {
+        NoteRequest request = new NoteRequest();
+        if (id != null) {
+            try {
+                Notes note = notesService.getNoteById(id, currentUser(auth));
+                request.setTitle(note.getTitle());
+                request.setContent(note.getContent());
+                note.getAttachments().size(); // Force init LAZY
+                model.addAttribute("note", note);
+            } catch (Exception e) {
+                return "redirect:/notes";
+            }
+        }
+        model.addAttribute("noteRequest", request);
+        model.addAttribute("noteId", id);
         return "note-form";
     }
 
@@ -73,22 +88,13 @@ public class NotesController {
     }
 
     @GetMapping("/notes/{id}")
-    public String view(@PathVariable Long id, Authentication auth, Model model) {
-        Notes note = notesService.getNoteById(id, currentUser(auth));
-        note.getAttachments().size();
-        model.addAttribute("note", note);
-        return "note-view";
-    }
-
-    @GetMapping("/notes/edit/{id}")
-    public String formEdit(@PathVariable Long id, Authentication auth, Model model) {
-        Notes note = notesService.getNoteById(id, currentUser(auth));
-        NoteRequest request = new NoteRequest();
-        request.setTitle(note.getTitle());
-        request.setContent(note.getContent());
-        model.addAttribute("noteRequest", request);
-        model.addAttribute("noteId", id);
-        return "note-form";
+    public String view(@PathVariable Long id, Authentication auth) {
+        try {
+            notesService.getNoteById(id, currentUser(auth));
+            return "redirect:/notes/edit/" + id;
+        } catch (Exception e) {
+            return "redirect:/notes";
+        }
     }
 
     @PostMapping("/notes/edit/{id}")
@@ -101,25 +107,35 @@ public class NotesController {
             model.addAttribute("noteId", id);
             return "note-form";
         }
-        notesService.updateNote(id, request, currentUser(auth));
+        try {
+            notesService.updateNote(id, request, currentUser(auth));
+        } catch (Exception e) {
+            return "redirect:/notes";
+        }
         return "redirect:/notes";
     }
 
     @PostMapping("/notes/delete/{id}")
     public String toTrash(@PathVariable Long id, Authentication auth) {
-        notesService.moveToTrash(id, currentUser(auth));
+        try {
+            notesService.moveToTrash(id, currentUser(auth));
+        } catch (Exception ignored) {}
         return "redirect:/notes";
     }
 
     @PostMapping("/trash/restore/{id}")
     public String restore(@PathVariable Long id, Authentication auth) {
-        notesService.restoreFromTrash(id, currentUser(auth));
+        try {
+            notesService.restoreFromTrash(id, currentUser(auth));
+        } catch (Exception ignored) {}
         return "redirect:/trash";
     }
 
     @PostMapping("/trash/delete/{id}")
     public String delete(@PathVariable Long id, Authentication auth) {
-        notesService.deletePermanently(id, currentUser(auth));
+        try {
+            notesService.deletePermanently(id, currentUser(auth));
+        } catch (Exception ignored) {}
         return "redirect:/trash";
     }
 
@@ -132,40 +148,50 @@ public class NotesController {
     @PostMapping("/notes/{id}/files")
     public String uploadFile(@PathVariable Long id,
                              @RequestParam("file") MultipartFile[] files,
-                             Authentication auth) throws IOException {
-        Notes note = notesService.getNoteById(id, currentUser(auth));
-        for (MultipartFile file : files) {
-            if (!file.isEmpty()) {
-                attachmentService.save(file, note);
+                             Authentication auth) {
+        try {
+            Notes note = notesService.getNoteById(id, currentUser(auth));
+            for (MultipartFile file : files) {
+                if (!file.isEmpty()) {
+                    attachmentService.save(file, note);
+                }
             }
+        } catch (Exception e) {
+            return "redirect:/notes";
         }
-        return "redirect:/notes/" + id;
+        return "redirect:/notes/edit/" + id;
     }
 
     @GetMapping("/notes/{id}/files/{fileId}")
     public ResponseEntity<byte[]> downloadFile(@PathVariable Long id,
                                                @PathVariable Long fileId,
                                                Authentication auth) {
-        Notes note = notesService.getNoteById(id, currentUser(auth));
-        Attachment attachment = attachmentService.getById(fileId, note);
+        try {
+            Notes note = notesService.getNoteById(id, currentUser(auth));
+            Attachment attachment = attachmentService.getById(fileId, note);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.parseMediaType(
-                attachment.getContentType() == null
-                        ? MediaType.APPLICATION_OCTET_STREAM_VALUE
-                        : attachment.getContentType()));
-        headers.setContentDispositionFormData("attachment", attachment.getFileName());
-        headers.setContentLength(attachment.getSize());
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.parseMediaType(
+                    attachment.getContentType() == null
+                            ? MediaType.APPLICATION_OCTET_STREAM_VALUE
+                            : attachment.getContentType()));
+            headers.setContentDispositionFormData("attachment", attachment.getFileName());
+            headers.setContentLength(attachment.getSize());
 
-        return new ResponseEntity<>(attachment.getData(), headers, HttpStatus.OK);
+            return new ResponseEntity<>(attachment.getData(), headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping("/notes/{id}/files/{fileId}/delete")
     public String deleteFile(@PathVariable Long id,
                              @PathVariable Long fileId,
                              Authentication auth) {
-        Notes note = notesService.getNoteById(id, currentUser(auth));
-        attachmentService.delete(fileId, note);
-        return "redirect:/notes/" + id;
+        try {
+            Notes note = notesService.getNoteById(id, currentUser(auth));
+            attachmentService.delete(fileId, note);
+        } catch (Exception ignored) {}
+        return "redirect:/notes/edit/" + id;
     }
 }
