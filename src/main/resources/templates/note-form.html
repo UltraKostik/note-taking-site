@@ -1,0 +1,176 @@
+
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+    >
+
+    <title th:text="${isEdit} ? 'Редактирование заметки' : 'Новая заметка'">
+        Заметка
+    </title>
+
+    <style>
+        body {
+            background-color: #2b1f1d;
+            font-family: "Courier New", Courier, monospace;
+        }
+
+        header {
+            background-color: #3a4d5c;
+            border-bottom: 3px double #1a2630;
+        }
+
+        .wood-container {
+            max-width: 850px;
+            margin: 40px auto;
+            padding: 35px;
+            background-color: #8a5a36;
+            background-image: url('/images/table.avif');
+            background-repeat: no-repeat;
+            background-size: 100% 100%;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+        }
+
+        .note-paper {
+            background-color: #fffde8;
+            background-image: url('/images/paper.jpg');
+            border: 2px solid #9c8a70;
+            padding: 30px;
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .form-control {
+            border: 1px solid #9c8a70;
+            border-radius: 2px;
+            font-family: "Courier New", Courier, monospace;
+            background-color: #fffde8;
+        }
+
+        .form-label {
+            color: #1a365d;
+            font-weight: bold;
+        }
+
+        .btn-retro {
+            border: 2px solid #000;
+            background-color: #222;
+            color: white;
+            border-radius: 2px;
+            box-shadow: 3px 3px 0 #111;
+            font-weight: bold;
+            font-family: "Courier New", Courier, monospace;
+        }
+
+        .btn-retro:hover {
+            background-color: #000;
+            color: white;
+        }
+
+        footer {
+            background-color: #2d3748;
+            border-top: 2px solid #1a202c;
+        }
+    </style>
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+
+<header class="text-white py-3">
+    <div class="container d-flex justify-content-between align-items-center">
+        <a href="/notes"
+           class="text-white text-decoration-none fw-bold fs-2">
+            Заметки
+        </a>
+
+        <a href="/notes"
+           class="text-white text-decoration-none">
+            Назад к заметкам
+        </a>
+    </div>
+</header>
+
+<main class="container flex-grow-1 wood-container">
+    <div class="note-paper">
+
+        <h2 class="text-center fw-bold mb-4"
+            style="color: #1a365d"
+            th:text="${isEdit} ? 'Редактирование заметки' : 'Новая заметка'">
+            Новая заметка
+        </h2>
+
+        <form
+                th:action="${isEdit}
+                ? @{/notes/edit/{id}(id=${noteId})}
+                : @{/notes/add}"
+                th:object="${noteRequest}"
+                method="post">
+
+            <div class="mb-4">
+                <label for="title" class="form-label">
+                    Название заметки
+                </label>
+
+                <input
+                        type="text"
+                        id="title"
+                        th:field="*{title}"
+                        class="form-control"
+                        placeholder="Введите название заметки"
+                        maxlength="200"
+                        required
+                >
+
+                <div class="text-danger mt-1"
+                     th:if="${#fields.hasErrors('title')}"
+                     th:errors="*{title}">
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label for="content" class="form-label">
+                    Текст заметки
+                </label>
+
+                <textarea
+                        id="content"
+                        th:field="*{content}"
+                        class="form-control"
+                        rows="8"
+                        placeholder="Напишите что-нибудь..."
+                        required
+                ></textarea>
+
+                <div class="text-danger mt-1"
+                     th:if="${#fields.hasErrors('content')}"
+                     th:errors="*{content}">
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between gap-3 flex-wrap">
+                <a href="/notes" class="btn btn-outline-dark">
+                    Отмена
+                </a>
+
+                <button type="submit" class="btn btn-retro px-4"
+                        th:text="${isEdit}
+                            ? 'Сохранить изменения'
+                            : 'Создать заметку'">
+                    Создать заметку
+                </button>
+            </div>
+        </form>
+    </div>
+</main>
+
+<footer class="text-white text-center py-4 mt-auto">
+    © 2026 NoteTaking OS
+</footer>
+
+</body>
+</html>

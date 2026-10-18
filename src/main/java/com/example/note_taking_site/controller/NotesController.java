@@ -58,16 +58,20 @@ public class NotesController {
     @GetMapping("/notes/add")
     public String formAdd(Model model) {
         model.addAttribute("noteRequest", new NoteRequest());
+        model.addAttribute("isEdit", false);
         return "note-form";
     }
 
     @PostMapping("/notes/add")
     public String add(@Valid @ModelAttribute("noteRequest") NoteRequest request,
                       BindingResult bindingResult,
-                      Authentication auth) {
+                      Authentication auth,
+                      Model model) {
         if (bindingResult.hasErrors()) {
+            model.addAttribute("isEdit", false);
             return "note-form";
         }
+
         notesService.createNote(request, currentUser(auth));
         return "redirect:/notes";
     }
@@ -81,13 +85,19 @@ public class NotesController {
     }
 
     @GetMapping("/notes/edit/{id}")
-    public String formEdit(@PathVariable Long id, Authentication auth, Model model) {
+    public String formEdit(@PathVariable Long id,
+                           Authentication auth,
+                           Model model) {
         Notes note = notesService.getNoteById(id, currentUser(auth));
+
         NoteRequest request = new NoteRequest();
         request.setTitle(note.getTitle());
         request.setContent(note.getContent());
+
         model.addAttribute("noteRequest", request);
         model.addAttribute("noteId", id);
+        model.addAttribute("isEdit", true);
+
         return "note-form";
     }
 
@@ -99,6 +109,7 @@ public class NotesController {
                        Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("noteId", id);
+            model.addAttribute("isEdit", true);
             return "note-form";
         }
         notesService.updateNote(id, request, currentUser(auth));
