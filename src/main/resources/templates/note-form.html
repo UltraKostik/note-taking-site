@@ -159,9 +159,11 @@
                         >Заметки</a
                     >
                     <nav class="d-flex gap-4">
-                        <a th:if="${#authorization.expression('hasRole(''ADMIN'')')}"
-                           href="/admin"
-                           class="text-white text-decoration-none fs-5">
+                        <a
+                            th:if="${#authorization.expression('hasRole(''ADMIN'')')}"
+                            href="/admin"
+                            class="text-white text-decoration-none fs-5"
+                        >
                             Админка
                         </a>
                         <a
@@ -188,11 +190,11 @@
                                 </button>
                             </form>
                         </div>
-                        <a
-                            href="/login"
-                            class="text-white text-decoration-none fs-5"
-                            >Войти</a
-                        >
+                        <!--                        <a-->
+                        <!--                            href="/login"-->
+                        <!--                            class="text-white text-decoration-none fs-5"-->
+                        <!--                            >Войти</a-->
+                        <!--                        >-->
                     </nav>
                 </div>
             </div>
@@ -296,7 +298,6 @@
                         </div>
                     </div>
 
-
                     <div id="new-files-container" class="mb-3"></div>
 
                     <div th:if="${note != null}">
@@ -355,17 +356,21 @@
                 </div>
                 <div class="row text-center">
                     <div class="col-md-4">
-                        <a href="https://watchbutdonotlearn.github.io/"
-                           title="lol"
-                           style="color: white; text-decoration: none;">
+                        <a
+                            href="https://watchbutdonotlearn.github.io/"
+                            title="lol"
+                            style="color: white; text-decoration: none"
+                        >
                             Обязательно проверить!!!
                         </a>
                     </div>
                     <div class="col">СПбУТУиЭ</div>
                     <div class="col-md-4">
-                        <a href="https://github.com/UltraKostik/note-taking-site"
-                           title="Репозиторий"
-                           style="color: white; text-decoration: none;">
+                        <a
+                            href="https://github.com/UltraKostik/note-taking-site"
+                            title="Репозиторий"
+                            style="color: white; text-decoration: none"
+                        >
                             Репозиторий
                         </a>
                     </div>
