@@ -209,13 +209,18 @@ HTML
         </div>
     </div>
 
-    <div th:if="${note != null}" class="mt-5 border-top pt-4">
-        <h3>Вложения</h3>
+            <div id="drop-zone" class="mb-3">
+                <div class="fs-5 fw-bold mb-1">Перетащите файлы сюда</div>
+                <div class="text-muted small">или нажмите, чтобы выбрать с компьютера</div>
+                <input type="file" id="file-input" multiple hidden>
+            </div>
 
         <div id="drop-zone" class="border border-2 border-dashed p-4 text-center mb-3" style="cursor: pointer;">
             Перетащите файлы сюда или нажмите для выбора
             <input type="file" id="file-input" multiple hidden>
         </div>
+    </div>
+</main>
 
         <ul class="list-group">
             <li class="list-group-item d-flex justify-content-between align-items-center" th:each="att : ${note.attachments}">
@@ -270,9 +275,10 @@ HTML
         dropZone.addEventListener('dragleave', () => dropZone.classList.remove('bg-secondary', 'text-white'));
         dropZone.addEventListener('drop', async e => {
             e.preventDefault();
-            dropZone.classList.remove('bg-secondary', 'text-white');
+            dropZone.classList.remove('dragover');
             await uploadFiles(e.dataTransfer.files);
         });
+
         fileInput.addEventListener('change', () => uploadFiles(fileInput.files));
 
         async function uploadFiles(files) {
@@ -282,13 +288,20 @@ HTML
             const csrf = document.querySelector('meta[name="_csrf"]').content;
             const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
 
-            const resp = await fetch(`/notes/${noteId}/files`, {
-                method: 'POST',
-                body: formData,
-                headers: { [csrfHeader]: csrf }
-            });
-            if (resp.ok || resp.redirected) location.reload();
-            else alert('Ошибка загрузки файла');
+            try {
+                const resp = await fetch(`/notes/${noteId}/files`, {
+                    method: 'POST',
+                    body: formData,
+                    headers: { [csrfHeader]: csrf }
+                });
+                if (resp.ok || resp.redirected) {
+                    location.reload();
+                } else {
+                    alert('Ошибка загрузки файла. Проверьте формат и размер.');
+                }
+            } catch (err) {
+                alert('Сетевая ошибка при загрузке файла.');
+            }
         }
     }
 </script>

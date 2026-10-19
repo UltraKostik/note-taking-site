@@ -24,7 +24,7 @@ public class ProfileController {
         User user = userRepository.findByEmail(auth.getName())
                 .orElseThrow(() -> new IllegalStateException("Authenticated user not found in DB"));
         model.addAttribute("user", user);
-        model.addAttribute("zametki", notesService.getActiveNotes(user));
+        model.addAttribute("notes", notesService.getActiveNotes(user));
         return "profile";
     }
 }
