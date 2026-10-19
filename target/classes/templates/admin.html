@@ -124,10 +124,17 @@
                             >Админка</a
                         >
                         <a
-                            href="/trash"
+                            href="/admin/notes"
                             class="text-white text-decoration-none fs-5"
-                            >Корзина</a
+                            >Все заметки</a
                         >
+                        <div th:if="${#authorization.expression('isAuthenticated()')}">
+                            <form th:action="@{/logout}" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-link text-white text-decoration-none fs-5 p-0">Выйти</button>
+                            </form>
+                        </div>
+
+                        <a th:unless="${#authorization.expression('isAuthenticated()')}" href="/login" class="text-white text-decoration-none fs-5">Войти</a>
                     </nav>
                 </div>
             </div>
@@ -186,7 +193,11 @@
                         <tbody>
                             <tr th:each="user : ${usersList}">
                                 <td th:text="${user.id}">1</td>
-                                <td th:text="${user.email}">user@spbutu.ru</td>
+                                <td>
+                                    <a th:href="@{/admin/users/{id}/notes(id=${user.id})}"
+                                       th:text="${user.email}"
+                                       class="text-decoration-none fw-bold"></a>
+                                </td>
                                 <td>
                                     <span
                                         class="badge bg-secondary text-uppercase"
@@ -204,7 +215,7 @@
                                             type="submit"
                                             class="btn btn-retro-outline btn-sm"
                                         >
-                                            Забанить
+                                            Удалить
                                         </button>
                                     </form>
                                 </td>
