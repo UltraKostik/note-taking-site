@@ -14,6 +14,7 @@ public interface NotesRepository extends JpaRepository<Notes, Long> {
 
     List<Notes> findAllByAuthorAndStatusOrderByUpdatedAtDesc(User author, Notes.NoteStatus status);
 
+    @EntityGraph(attributePaths = {"author"})
     List<Notes> findAllByStatusOrderByUpdatedAtDesc(Notes.NoteStatus status);
 
     @EntityGraph(attributePaths = {"attachments"})
@@ -22,4 +23,8 @@ public interface NotesRepository extends JpaRepository<Notes, Long> {
     void deleteAllByAuthor(User author);
 
     List<Notes> findAllByAuthorOrderByUpdatedAtDesc(User author);
+
+    @Override
+    @EntityGraph(attributePaths = {"author"})
+    List<Notes> findAll();
 }
