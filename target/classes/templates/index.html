@@ -158,11 +158,13 @@
                             class="text-white text-decoration-none fs-5"
                             >Профиль</a
                         >
-                        <a
-                            href="/login"
-                            class="text-white text-decoration-none fs-5"
-                            >Войти</a
-                        >
+                        <div th:if="${#authorization.expression('isAuthenticated()')}">
+                            <form th:action="@{/logout}" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-link text-white text-decoration-none fs-5 p-0">Выйти</button>
+                            </form>
+                        </div>
+
+                        <a th:unless="${#authorization.expression('isAuthenticated()')}" href="/login" class="text-white text-decoration-none fs-5">Войти</a>
                     </nav>
                 </div>
             </div>
@@ -180,42 +182,29 @@
             </h1>
 
             <div class="row row-cols-1 row-cols-md-3 g-5">
-                <div class="col" th:each="note : \${notes}">
+                <div class="col" th:each="note : ${notes}">
                     <div class="card h-100 notepad-card">
                         <div class="card-body text-center">
                             <h5
                                 class="card-title fw-bold"
-                                th:text="\${note.title}"
+                                th:text="${note.title}"
                             >
                                 Название заметки
                             </h5>
                             <p
                                 class="card-text pt-2"
                                 style="line-height: 20px; color: #5a5a5a"
-                                th:text="\${note.content}"
+                                th:text="${note.content}"
                             >
                                 Текст заметки...
                             </p>
                         </div>
-                        <div
-                            class="card-footer bg-transparent border-top-0 d-flex justify-content-center gap-2 pb-3"
-                        >
-                            <a
-                                th:href="@{/notes/edit/{id}(id=\${note.id})}"
-                                class="btn btn-retro-outline btn-sm px-2"
-                            >
+                        <div class="card-footer bg-transparent border-top-0 d-flex justify-content-center gap-2 pb-3">
+                            <a th:href="@{/notes/edit/{id}(id=${note.id})}" class="btn btn-retro-outline btn-sm">
                                 Редактировать
                             </a>
-                            <form
-                                th:action="@{/notes/delete/{id}(id=\${note.id})}"
-                                th:method="post"
-                            >
-                                <button
-                                    type="submit"
-                                    class="btn btn-retro-danger btn-sm px-2"
-                                >
-                                    Удалить
-                                </button>
+                            <form th:action="@{/notes/delete/{id}(id=${note.id})}" th:method="post">
+                                <button type="submit" class="btn btn-retro-danger btn-sm px-2">Удалить</button>
                             </form>
                         </div>
                     </div>
@@ -223,10 +212,7 @@
             </div>
 
             <div class="text-center mt-5">
-                <a
-                    th:href="@{/notes/add}"
-                    class="btn btn-retro-dark px-4 py-2 fs-5"
-                >
+                <a th:href="@{/notes/add}" class="btn btn-retro-dark px-4 py-2 fs-5">
                     + Добавить заметку
                 </a>
             </div>

@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+            crossorigin="anonymous"
+    />
+
+    <link
+            rel="icon"
+            type="image/svg+xml"
+            th:href="@{/images/icon.svg}"
+            href="/images/icon.svg"
+    />
+
+    <title>Заметки пользователя</title>
+
+    <style>
+        body {
+            background-color: #2b1f1d;
+            font-family: "Courier New", Courier, monospace;
+            color: #2b2b2b;
+        }
+
+        header.bg-secondary {
+            background-color: #3a4d5c !important;
+            border-bottom: 3px double #1a2630;
+            z-index: 10;
+        }
+
+        nav a:hover,
+        nav button:hover {
+            text-decoration: underline !important;
+        }
+
+        .wood-table-container {
+            max-width: 1200px;
+            width: calc(100% - 24px);
+            margin: 40px auto;
+            padding: 40px;
+            background-color: #8a5a36;
+            background-image: url('/images/table.avif');
+            background-repeat: no-repeat;
+            background-size: 100% 100%;
+            border-radius: 10%;
+            box-shadow:
+                inset 0 0 40px rgba(0, 0, 0, 0.6),
+                0 20px 50px rgba(0, 0, 0, 0.8);
+            position: relative;
+        }
+
+        .admin-title {
+            color: #fffde8;
+            text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.4);
+            font-size: calc(1.375rem + 1.5vw);
+            line-height: 1.2;
+            overflow-wrap: anywhere;
+        }
+
+        .admin-panel-wrapper {
+            background-color: #fffde8;
+            border: 1px solid #9c8a70;
+            border-radius: 4px;
+            padding: 1.5rem;
+            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .section-title {
+            color: #1a365d;
+            text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .table {
+            --bs-table-bg: transparent;
+            --bs-table-color: #2b2b2b;
+            --bs-table-striped-bg: rgba(156, 138, 112, 0.12);
+            --bs-table-striped-color: #2b2b2b;
+            --bs-table-hover-bg: rgba(255, 253, 232, 0.6);
+            --bs-table-hover-color: #2b2b2b;
+            margin-bottom: 0;
+        }
+
+        .table thead th {
+            color: #1a365d;
+            border-bottom: 2px solid #9c8a70;
+            background-color: transparent;
+            white-space: nowrap;
+        }
+
+        .table tbody td {
+            border-color: rgba(156, 138, 112, 0.4);
+            vertical-align: middle;
+        }
+
+        .btn-retro-outline {
+            border: 2px solid #5a5a5a;
+            background-color: #f0edf5;
+            color: #2b2b2b;
+            border-radius: 2px;
+            font-weight: bold;
+            box-shadow: 2px 2px 0 #000;
+            font-family: "Courier New", Courier, monospace;
+        }
+
+        .btn-retro-outline:hover {
+            background-color: #e2dee9;
+            color: #2b2b2b;
+            transform: translate(1px, 1px);
+            box-shadow: 1px 1px 0 #000;
+        }
+
+        .btn-retro-danger {
+            border: 2px solid #702b2b;
+            background-color: #f5e3df;
+            color: #702b2b;
+            border-radius: 2px;
+            font-weight: bold;
+            box-shadow: 2px 2px 0 #000;
+            font-family: "Courier New", Courier, monospace;
+        }
+
+        .btn-retro-danger:hover {
+            background-color: #e9c9c2;
+            color: #702b2b;
+            transform: translate(1px, 1px);
+            box-shadow: 1px 1px 0 #000;
+        }
+
+        .btn-retro-primary {
+            border: 2px solid #1a365d;
+            background-color: #e4ebf5;
+            color: #1a365d;
+            border-radius: 2px;
+            font-weight: bold;
+            box-shadow: 2px 2px 0 #000;
+            font-family: "Courier New", Courier, monospace;
+        }
+
+        .btn-retro-primary:hover {
+            background-color: #cddbed;
+            color: #1a365d;
+            transform: translate(1px, 1px);
+            box-shadow: 1px 1px 0 #000;
+        }
+
+        .empty-notes {
+            background-color: #f0edf5;
+            border: 1px dashed #9c8a70;
+            border-radius: 4px;
+            color: #1a365d;
+        }
+
+        footer.bg-secondary {
+            background-color: #2d3748 !important;
+            border-top: 2px solid #1a202c;
+            font-size: 0.9rem;
+            z-index: 10;
+        }
+
+        @media (max-width: 768px) {
+            .wood-table-container {
+                padding: 24px 16px;
+                border-radius: 24px;
+                margin: 24px auto;
+            }
+
+            .admin-panel-wrapper {
+                padding: 1rem;
+            }
+
+            .admin-title {
+                font-size: 1.8rem;
+            }
+
+            .header-inner {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .header-nav {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 12px !important;
+            }
+
+            .footer-info {
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+
+<header class="bg-secondary text-white py-3">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center header-inner">
+            <a
+                    href="/"
+                    class="text-white text-decoration-none fw-bold fs-2"
+            >
+                Заметки
+            </a>
+
+            <nav class="d-flex gap-4 header-nav">
+                <a
+                        href="/admin"
+                        class="text-white text-decoration-none fs-5"
+                >
+                    Админка
+                </a>
+
+                <a
+                        href="/admin/notes"
+                        class="text-white text-decoration-none fs-5"
+                >
+                    Все заметки
+                </a>
+
+                <div th:if="${#authorization.expression('isAuthenticated()')}">
+                    <form th:action="@{/logout}" method="post" class="d-inline">
+                        <button
+                                type="submit"
+                                class="btn btn-link text-white text-decoration-none fs-5 p-0"
+                        >
+                            Выйти
+                        </button>
+                    </form>
+                </div>
+
+                <a
+                        th:unless="${#authorization.expression('isAuthenticated()')}"
+                        href="/login"
+                        class="text-white text-decoration-none fs-5"
+                >
+                    Войти
+                </a>
+            </nav>
+        </div>
+    </div>
+</header>
+
+<main class="container flex-grow-1 wood-table-container py-4">
+
+    <h1 class="admin-title mb-2 fw-bold">
+        Заметки пользователя
+    </h1>
+
+    <div class="mb-4 text-white fs-5"
+         style="overflow-wrap: anywhere; text-shadow: 2px 2px 3px #000;">
+        <span class="fw-bold">Пользователь:</span>
+        <span th:text="${targetUser.email}">user@example.com</span>
+    </div>
+
+    <div class="mb-4">
+        <a th:href="@{/admin}" class="btn btn-retro-outline">
+            &larr; Назад к пользователям
+        </a>
+    </div>
+
+    <div class="admin-panel-wrapper">
+
+        <h3 class="section-title fw-bold mb-3">
+            Список заметок
+        </h3>
+
+        <div
+                th:if="${#lists.isEmpty(notes)}"
+                class="empty-notes p-4 text-center"
+        >
+            <div class="fs-4 fw-bold mb-2">
+                Заметок пока нет
+            </div>
+            <p class="mb-0">
+                У этого пользователя нет сохранённых заметок.
+            </p>
+        </div>
+
+        <div
+                class="table-responsive"
+                th:unless="${#lists.isEmpty(notes)}"
+        >
+            <table class="table table-striped table-hover align-middle">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Заголовок</th>
+                    <th>Статус</th>
+                    <th>Дата обновления</th>
+                    <th class="text-end">Действия</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="note : ${notes}">
+                    <td th:text="${note.id}">1</td>
+
+                    <td
+                            class="fw-bold"
+                            th:text="${note.title}"
+                    >
+                        Название заметки
+                    </td>
+
+                    <td>
+                                <span
+                                        class="badge bg-secondary text-uppercase"
+                                        th:text="${note.status}"
+                                >
+                                    ACTIVE
+                                </span>
+                    </td>
+
+                    <td
+                            class="text-nowrap"
+                            th:text="${#temporals.format(note.updatedAt, 'dd.MM.yyyy HH:mm')}"
+                    >
+                        19.10.2026 12:00
+                    </td>
+
+                    <td class="text-end">
+                        <div class="d-flex justify-content-end gap-2 flex-wrap">
+
+                            <a
+                                    th:href="@{/admin/notes/{id}/edit(id=${note.id}, userId=${targetUser.id})}"
+                                    class="btn btn-retro-primary btn-sm"
+                            >
+                                Редактировать
+                            </a>
+
+                            <form
+                                    th:action="@{/admin/notes/{id}/delete(id=${note.id}, userId=${targetUser.id})}"
+                                    method="post"
+                                    class="d-inline"
+                            >
+                                <button
+                                        type="submit"
+                                        class="btn btn-retro-danger btn-sm"
+                                        onclick="return confirm('Вы уверены, что хотите удалить эту заметку?');"
+                                >
+                                    Удалить
+                                </button>
+                            </form>
+
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</main>
+
+<footer class="bg-secondary text-white py-4 mt-auto">
+    <div class="container">
+        <div class="text-white fs-5 mb-2 fw-bold text-center">
+            Системная информация:
+        </div>
+
+        <div class="row text-center footer-info">
+            <div class="col-md-4">
+                Тел: 8 (800) 600-86-76
+            </div>
+
+            <div class="col-md-4">
+                СПбУТУиЭ
+            </div>
+
+            <div class="col-md-4">
+                © 2026 NoteTaking OS
+            </div>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>
