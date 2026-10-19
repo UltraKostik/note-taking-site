@@ -37,21 +37,31 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public String register(@Valid @ModelAttribute("registerRequest") RegisterRequest request,
-                           BindingResult bindingResult,
-                           Model model) {
+    public String register(
+            @Valid @ModelAttribute("registerRequest") RegisterRequest request,
+            BindingResult bindingResult,
+            Model model) {
+
         if (bindingResult.hasErrors()) {
             log.warn("Registration validation failed for email {}", request.getEmail());
             return "register";
         }
+
+        if (request.getPassword() == null || request.getPassword().length() < 8) {
+            model.addAttribute("error", "Пароль должен содержать минимум 8 символов");
+            return "register";
+        }
+
         try {
             userService.register(request);
             log.info("User registered successfully: {}", request.getEmail());
+
         } catch (UserAlreadyExistsException e) {
             log.warn("Registration failed: {}", e.getMessage());
-            model.addAttribute("error", e.getMessage());
+            model.addAttribute("error", "Данный аккаунт уже существует");
             return "register";
         }
+
         return "redirect:/login?registered";
     }
 }
