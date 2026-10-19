@@ -8,16 +8,15 @@ import com.example.note_taking_site.repository.UserRepository;
 import com.example.note_taking_site.service.AttachmentService;
 import com.example.note_taking_site.service.NotesService;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.nio.charset.StandardCharsets;
 
 @Controller
 public class NotesController {
@@ -42,7 +41,6 @@ public class NotesController {
                 .orElseThrow(() -> new IllegalStateException("Authenticated user not found in DB"));
     }
 
-    // --- главная: список активных заметок. Работает и на "/", и на "/notes" ---
     @GetMapping({"/", "/notes"})
     public String listActive(Authentication auth, Model model) {
         try {
@@ -54,7 +52,6 @@ public class NotesController {
         }
     }
 
-    // --- корзина ---
     @GetMapping("/trash")
     public String listTrash(Authentication auth, Model model) {
         try {
@@ -66,7 +63,6 @@ public class NotesController {
         }
     }
 
-    // --- форма создания ---
     @GetMapping("/notes/add")
     public String formAdd(Model model) {
         model.addAttribute("noteRequest", new NoteRequest());
@@ -80,7 +76,6 @@ public class NotesController {
             Notes note = notesService.getNoteById(id, currentUser(auth));
             request.setTitle(note.getTitle());
             request.setContent(note.getContent());
-            note.getAttachments().size();
 
             model.addAttribute("note", note);
             model.addAttribute("noteRequest", request);
@@ -91,7 +86,6 @@ public class NotesController {
         }
     }
 
-    // --- создание заметки (сразу с файлами) ---
     @PostMapping("/notes/add")
     public String add(@Valid @ModelAttribute("noteRequest") NoteRequest request,
                       BindingResult bindingResult,
@@ -104,7 +98,6 @@ public class NotesController {
         User user = currentUser(auth);
         Notes note = notesService.createNote(request, user);
 
-        // Если пользователь перетащил файлы при создании — сохраняем их
         if (files != null) {
             for (MultipartFile file : files) {
                 if (!file.isEmpty()) {
@@ -119,7 +112,6 @@ public class NotesController {
         return "redirect:/notes/edit/" + note.getId();
     }
 
-    // --- просмотр заметки (редирект на редактирование) ---
     @GetMapping("/notes/{id}")
     public String view(@PathVariable Long id, Authentication auth) {
         try {
@@ -130,7 +122,6 @@ public class NotesController {
         }
     }
 
-    // --- обновление заметки ---
     @PostMapping("/notes/edit/{id}")
     public String edit(@PathVariable Long id,
                        @Valid @ModelAttribute("noteRequest") NoteRequest request,
@@ -152,7 +143,6 @@ public class NotesController {
         return "redirect:/notes";
     }
 
-    // --- soft delete: в корзину ---
     @PostMapping("/notes/delete/{id}")
     public String toTrash(@PathVariable Long id, Authentication auth) {
         try {
@@ -161,7 +151,6 @@ public class NotesController {
         return "redirect:/notes";
     }
 
-    // --- восстановление из корзины ---
     @PostMapping("/trash/restore/{id}")
     public String restore(@PathVariable Long id, Authentication auth) {
         try {
@@ -170,7 +159,6 @@ public class NotesController {
         return "redirect:/trash";
     }
 
-    // --- физическое удаление ---
     @PostMapping("/trash/delete/{id}")
     public String delete(@PathVariable Long id, Authentication auth) {
         try {
@@ -179,7 +167,6 @@ public class NotesController {
         return "redirect:/trash";
     }
 
-    // --- очистить корзину ---
     @PostMapping("/trash/clear")
     public String clearTrash(Authentication auth) {
         try {
@@ -188,7 +175,6 @@ public class NotesController {
         return "redirect:/trash";
     }
 
-    // --- загрузка файлов (для страницы редактирования) ---
     @PostMapping("/notes/{id}/files")
     public String uploadFile(@PathVariable Long id,
                              @RequestParam("file") MultipartFile[] files,
@@ -206,7 +192,6 @@ public class NotesController {
         return "redirect:/notes/edit/" + id;
     }
 
-    // --- скачивание файла ---
     @GetMapping("/notes/{id}/files/{fileId}")
     public ResponseEntity<byte[]> downloadFile(@PathVariable Long id,
                                                @PathVariable Long fileId,
@@ -220,7 +205,9 @@ public class NotesController {
                     attachment.getContentType() == null
                             ? MediaType.APPLICATION_OCTET_STREAM_VALUE
                             : attachment.getContentType()));
-            headers.setContentDispositionFormData("attachment", attachment.getFileName());
+            headers.setContentDisposition(ContentDisposition.attachment()
+                    .filename(attachment.getFileName(), StandardCharsets.UTF_8)
+                    .build());
             headers.setContentLength(attachment.getSize());
 
             return new ResponseEntity<>(attachment.getData(), headers, HttpStatus.OK);
@@ -229,7 +216,6 @@ public class NotesController {
         }
     }
 
-    // --- удаление файла ---
     @PostMapping("/notes/{id}/files/{fileId}/delete")
     public String deleteFile(@PathVariable Long id,
                              @PathVariable Long fileId,
