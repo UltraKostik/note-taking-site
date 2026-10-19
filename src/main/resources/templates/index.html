@@ -38,7 +38,7 @@
                 margin: 40px auto;
                 padding: 40px;
                 background-color: #8a5a36;
-                background-image: url(/images/table.avif);
+                background-image: url(/images/table.jpg);
                 background-repeat: no-repeat;
                 background-size: 100% 100%;
                 border-radius: 10%;
@@ -158,13 +158,29 @@
                             class="text-white text-decoration-none fs-5"
                             >Профиль</a
                         >
-                        <div th:if="${#authorization.expression('isAuthenticated()')}">
-                            <form th:action="@{/logout}" method="post" class="d-inline">
-                                <button type="submit" class="btn btn-link text-white text-decoration-none fs-5 p-0">Выйти</button>
+                        <div
+                            th:if="${#authorization.expression('isAuthenticated()')}"
+                        >
+                            <form
+                                th:action="@{/logout}"
+                                method="post"
+                                class="d-inline"
+                            >
+                                <button
+                                    type="submit"
+                                    class="btn btn-link text-white text-decoration-none fs-5 p-0"
+                                >
+                                    Выйти
+                                </button>
                             </form>
                         </div>
 
-                        <a th:unless="${#authorization.expression('isAuthenticated()')}" href="/login" class="text-white text-decoration-none fs-5">Войти</a>
+                        <a
+                            th:unless="${#authorization.expression('isAuthenticated()')}"
+                            href="/login"
+                            class="text-white text-decoration-none fs-5"
+                            >Войти</a
+                        >
                     </nav>
                 </div>
             </div>
@@ -199,12 +215,25 @@
                                 Текст заметки...
                             </p>
                         </div>
-                        <div class="card-footer bg-transparent border-top-0 d-flex justify-content-center gap-2 pb-3">
-                            <a th:href="@{/notes/edit/{id}(id=${note.id})}" class="btn btn-retro-outline btn-sm">
+                        <div
+                            class="card-footer bg-transparent border-top-0 d-flex justify-content-center gap-2 pb-3"
+                        >
+                            <a
+                                th:href="@{/notes/edit/{id}(id=${note.id})}"
+                                class="btn btn-retro-outline btn-sm"
+                            >
                                 Редактировать
                             </a>
-                            <form th:action="@{/notes/delete/{id}(id=${note.id})}" th:method="post">
-                                <button type="submit" class="btn btn-retro-danger btn-sm px-2">Удалить</button>
+                            <form
+                                th:action="@{/notes/delete/{id}(id=${note.id})}"
+                                th:method="post"
+                            >
+                                <button
+                                    type="submit"
+                                    class="btn btn-retro-danger btn-sm px-2"
+                                >
+                                    Удалить
+                                </button>
                             </form>
                         </div>
                     </div>
@@ -212,7 +241,10 @@
             </div>
 
             <div class="text-center mt-5">
-                <a th:href="@{/notes/add}" class="btn btn-retro-dark px-4 py-2 fs-5">
+                <a
+                    th:href="@{/notes/add}"
+                    class="btn btn-retro-dark px-4 py-2 fs-5"
+                >
                     + Добавить заметку
                 </a>
             </div>
