@@ -150,7 +150,7 @@
                             </form>
                         </div>
 
-                        <!-- Показываем «Войти», если НЕ авторизован -->
+
                         <a th:unless="${#authorization.expression('isAuthenticated()')}" href="/login" class="text-white text-decoration-none fs-5">Войти</a>
                     </nav>
                 </div>

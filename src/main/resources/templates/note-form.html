@@ -1,45 +1,218 @@
+HTML
 <!DOCTYPE html>
 <html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${noteId == null} ? 'Новая заметка' : 'Редактирование заметки'"></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <meta name="_csrf" th:content="${_csrf.token}"/>
     <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
-</head>
-<body>
-<div class="container py-4">
-    <h1 th:text="${noteId == null} ? 'Новая заметка' : 'Редактирование заметки'"></h1>
 
-    <form   th:object="${noteRequest}"
-            th:action="${isAdminEdit != null and isAdminEdit}
+    <style>
+        body {
+            background-color: #2b1f1d;
+            font-family: "Courier New", Courier, monospace;
+            color: #2b2b2b;
+        }
+
+        header.bg-secondary {
+            background-color: #3a4d5c !important;
+            border-bottom: 3px double #1a2630;
+        }
+
+        nav a:hover {
+            text-decoration: underline !important;
+        }
+
+        .wood-table-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 40px;
+            background-color: #8a5a36;
+            background-image: url(/images/table.avif);
+            background-repeat: no-repeat;
+            background-size: 100% 100%;
+            border-radius: 30px;
+            box-shadow:
+                inset 0 0 40px rgba(0, 0, 0, 0.6),
+                0 20px 50px rgba(0, 0, 0, 0.8);
+        }
+
+        .notepad-card {
+            background-color: #fffde8;
+            background-image: url(/images/paper.jpg);
+            background-size: 20px 20px;
+            border: 2px solid #9c8a70;
+            border-radius: 4px;
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        h1, h3 {
+            color: #fffde8;
+            text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.4);
+        }
+
+        .form-label {
+            color: #1a365d;
+            font-weight: bold;
+        }
+
+        .form-control {
+            background-color: #fffde8;
+            border: 1px solid #9c8a70;
+            border-radius: 2px;
+            font-family: "Courier New", Courier, monospace;
+        }
+
+        .form-control:focus {
+            background-color: #fffde8;
+            border-color: #3a4d5c;
+            box-shadow: 0 0 0 0.2rem rgba(58, 77, 92, 0.2);
+        }
+
+        .btn-retro-outline {
+            border: 2px solid #5a5a5a;
+            background-color: #f0edf5;
+            color: #2b2b2b;
+            border-radius: 2px;
+            font-weight: bold;
+            box-shadow: 2px 2px 0 #000;
+        }
+
+        .btn-retro-outline:hover {
+            background-color: #e2dee9;
+            color: #2b2b2b;
+            transform: translate(1px, 1px);
+            box-shadow: 1px 1px 0 #000;
+        }
+
+        .btn-retro-dark {
+            border: 2px solid #000;
+            background-color: #222;
+            color: #fff;
+            border-radius: 2px;
+            box-shadow: 4px 4px 0 #111;
+            font-weight: bold;
+        }
+
+        .btn-retro-dark:hover {
+            background-color: #000;
+            color: #fff;
+            box-shadow: 2px 2px 0 #111;
+            transform: translate(1px, 1px);
+        }
+
+        .btn-retro-danger {
+            border: 2px solid #000;
+            background-color: #dc3545;
+            color: #fff;
+            border-radius: 2px;
+            box-shadow: 4px 4px 0 #58151c;
+            font-weight: bold;
+        }
+
+        .btn-retro-danger:hover {
+            background-color: #bb2d3b;
+            color: #fff;
+            box-shadow: 2px 2px 0 #58151c;
+            transform: translate(1px, 1px);
+        }
+
+        #drop-zone {
+            background-color: #fffde8 !important;
+            border-color: #9c8a70 !important;
+            border-style: dashed !important;
+            color: #2b2b2b;
+        }
+
+        #drop-zone.bg-secondary {
+            background-color: #3a4d5c !important;
+            color: #fff !important;
+        }
+
+        .list-group-item {
+            background-color: #fffde8;
+            border-color: #9c8a70;
+        }
+
+        .list-group-item a {
+            color: #1a365d;
+        }
+
+        footer.bg-secondary {
+            background-color: #2d3748 !important;
+            border-top: 2px solid #1a202c;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .wood-table-container {
+                margin: 20px 12px;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+
+<header class="bg-secondary text-white py-3">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center">
+            <a href="/" class="text-white text-decoration-none fw-bold fs-2">Заметки</a>
+            <nav class="d-flex gap-4">
+                <a href="/trash" class="text-white text-decoration-none fs-5">Корзина</a>
+                <a href="/profile" class="text-white text-decoration-none fs-5">Профиль</a>
+                <div th:if="${#authorization.expression('isAuthenticated()')}">
+                    <form th:action="@{/logout}" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-link text-white text-decoration-none fs-5 p-0">Выйти</button>
+                    </form>
+                </div>
+                <a th:unless="${#authorization.expression('isAuthenticated()')}" href="/login" class="text-white text-decoration-none fs-5">Войти</a>
+            </nav>
+        </div>
+    </div>
+</header>
+
+<main class="container flex-grow-1 wood-table-container">
+    <h1 class="fw-bold mb-4 text-center"
+        th:text="${noteId == null} ? 'Новая заметка' : 'Редактирование заметки'"></h1>
+
+    <div class="card notepad-card">
+        <div class="card-body p-4">
+            <form th:object="${noteRequest}"
+                  th:action="${isAdminEdit != null and isAdminEdit}
         ? @{/admin/notes/{id}/edit(id=${noteId}, userId=${userId})}
         : (${noteId != null}
             ? @{/notes/edit/{id}(id=${noteId})}
             : @{/notes/add})"
-            method="post">
+                  method="post">
 
-        <div class="mb-3">
-            <label class="form-label">Заголовок</label>
-            <input type="text" th:field="*{title}" class="form-control"/>
-            <span th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="text-danger"></span>
+                <div class="mb-3">
+                    <label class="form-label">Заголовок</label>
+                    <input type="text" th:field="*{title}" class="form-control"/>
+                    <span th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Содержимое</label>
+                    <textarea th:field="*{content}" class="form-control" rows="6"></textarea>
+                    <span th:if="${#fields.hasErrors('content')}" th:errors="*{content}" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-retro-dark"
+                        th:text="${noteId == null} ? 'Создать' : 'Сохранить'"></button>
+                <a th:href="${isAdminEdit != null and isAdminEdit} ? @{/admin/users/{id}/notes(id=${userId})} : @{/notes}"
+                   class="btn btn-retro-outline">Отмена</a>
+            </form>
         </div>
-
-        <div class="mb-3">
-            <label class="form-label">Содержимое</label>
-            <textarea th:field="*{content}" class="form-control" rows="6"></textarea>
-            <span th:if="${#fields.hasErrors('content')}" th:errors="*{content}" class="text-danger"></span>
-        </div>
-
-        <button type="submit" class="btn btn-primary" th:text="${noteId == null} ? 'Создать' : 'Сохранить'"></button>
-        <a th:href="${isAdminEdit != null and isAdminEdit} ? @{/admin/users/{id}/notes(id=${userId})} : @{/notes}"
-           class="btn btn-secondary">Отмена</a>
-    </form>
+    </div>
 
     <div th:if="${note != null}" class="mt-5 border-top pt-4">
         <h3>Вложения</h3>
 
-        <div id="drop-zone" class="border border-2 border-dashed p-4 text-center mb-3 bg-light" style="cursor: pointer;">
+        <div id="drop-zone" class="border border-2 border-dashed p-4 text-center mb-3" style="cursor: pointer;">
             Перетащите файлы сюда или нажмите для выбора
             <input type="file" id="file-input" multiple hidden>
         </div>
@@ -51,12 +224,25 @@
                     <span class="text-muted small">(<span th:text="${att.size}"></span> байт)</span>
                 </div>
                 <form th:action="@{/notes/{id}/files/{fid}/delete(id=${note.id}, fid=${att.id})}" method="post">
-                    <button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
+                    <button type="submit" class="btn btn-retro-danger btn-sm">Удалить</button>
                 </form>
             </li>
         </ul>
     </div>
-</div>
+</main>
+
+<footer class="bg-secondary text-white py-4 mt-auto">
+    <div class="container">
+        <div class="text-white fs-5 mb-2 fw-bold text-center">
+            Системная информация:
+        </div>
+        <div class="row text-center">
+            <div class="col">Тел: 8 (800) 600-86-76</div>
+            <div class="col">СПбУТУиЭ</div>
+            <div class="col">© 2026 NoteTaking OS</div>
+        </div>
+    </div>
+</footer>
 
 <script th:inline="javascript">
     const noteId = /*[[${note != null ? note.id : null}]]*/ null;
@@ -65,7 +251,10 @@
         const fileInput = document.getElementById('file-input');
 
         dropZone.addEventListener('click', () => fileInput.click());
-        dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('bg-secondary', 'text-white'); });
+        dropZone.addEventListener('dragover', e => {
+            e.preventDefault();
+            dropZone.classList.add('bg-secondary', 'text-white');
+        });
         dropZone.addEventListener('dragleave', () => dropZone.classList.remove('bg-secondary', 'text-white'));
         dropZone.addEventListener('drop', async e => {
             e.preventDefault();
@@ -91,5 +280,6 @@
         }
     }
 </script>
+
 </body>
 </html>
