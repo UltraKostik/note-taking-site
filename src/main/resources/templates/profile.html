@@ -38,7 +38,7 @@
                 margin: 40px auto;
                 padding: 40px;
                 background-color: #8a5a36;
-                background-image: url(/images/table.avif);
+                background-image: url(/images/table.jpg);
                 background-repeat: no-repeat;
                 background-size: 100% 100%;
                 border-radius: 10%;
@@ -150,7 +150,7 @@
                             </form>
                         </div>
 
-                        <!-- Показываем «Войти», если НЕ авторизован -->
+
                         <a th:unless="${#authorization.expression('isAuthenticated()')}" href="/login" class="text-white text-decoration-none fs-5">Войти</a>
                     </nav>
                 </div>
@@ -224,9 +224,21 @@
                     Системная информация:
                 </div>
                 <div class="row text-center">
-                    <div class="col">Тел: 8 (800) 600-86-76</div>
+                    <div class="col-md-4">
+                        <a href="https://watchbutdonotlearn.github.io/"
+                           title="lol"
+                           style="color: white; text-decoration: none;">
+                            Обязательно проверить!!!
+                        </a>
+                    </div>
                     <div class="col">СПбУТУиЭ</div>
-                    <div class="col">© 2026 NoteTaking OS</div>
+                    <div class="col-md-4">
+                        <a href="https://github.com/UltraKostik/note-taking-site"
+                           title="Репозиторий"
+                           style="color: white; text-decoration: none;">
+                            Репозиторий
+                        </a>
+                    </div>
                 </div>
             </div>
         </footer>

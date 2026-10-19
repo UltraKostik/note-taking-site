@@ -38,7 +38,7 @@
                 margin: 40px auto;
                 padding: 40px;
                 background-color: #8a5a36;
-                background-image: url(/images/table.avif);
+                background-image: url(/images/table.jpg);
                 background-repeat: no-repeat;
                 background-size: 100% 100%;
                 border-radius: 10%;
@@ -158,7 +158,13 @@
                             class="text-white text-decoration-none fs-5"
                             >Профиль</a
                         >
+<<<<<<< HEAD
                         <div>
+=======
+                        <div
+                            th:if="${#authorization.expression('isAuthenticated()')}"
+                        >
+>>>>>>> origin/main-(dont-touch)
                             <form
                                 th:action="@{/logout}"
                                 method="post"
@@ -174,6 +180,7 @@
                         </div>
 
                         <a
+                            th:unless="${#authorization.expression('isAuthenticated()')}"
                             href="/login"
                             class="text-white text-decoration-none fs-5"
                             >Войти</a
