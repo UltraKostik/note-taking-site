@@ -158,11 +158,13 @@
                             class="text-white text-decoration-none fs-5"
                             >Профиль</a
                         >
-                        <a
-                            href="/login"
-                            class="text-white text-decoration-none fs-5"
-                            >Войти</a
-                        >
+                        <div th:if="${#authorization.expression('isAuthenticated()')}">
+                            <form th:action="@{/logout}" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-link text-white text-decoration-none fs-5 p-0">Выйти</button>
+                            </form>
+                        </div>
+
+                        <a th:unless="${#authorization.expression('isAuthenticated()')}" href="/login" class="text-white text-decoration-none fs-5">Войти</a>
                     </nav>
                 </div>
             </div>
