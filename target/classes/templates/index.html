@@ -158,9 +158,13 @@
                             class="text-white text-decoration-none fs-5"
                             >Профиль</a
                         >
+<<<<<<< HEAD
+                        <div>
+=======
                         <div
                             th:if="${#authorization.expression('isAuthenticated()')}"
                         >
+>>>>>>> origin/main-(dont-touch)
                             <form
                                 th:action="@{/logout}"
                                 method="post"

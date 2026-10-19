@@ -8,10 +8,7 @@ import com.example.note_taking_site.repository.UserRepository;
 import com.example.note_taking_site.service.AttachmentService;
 import com.example.note_taking_site.service.NotesService;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,7 +16,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 @Controller
 public class NotesController {
@@ -37,68 +34,92 @@ public class NotesController {
     }
 
     private User currentUser(Authentication auth) {
+        if (auth == null) {
+            throw new IllegalStateException("User not authenticated");
+        }
         return userRepository.findByEmail(auth.getName())
                 .orElseThrow(() -> new IllegalStateException("Authenticated user not found in DB"));
     }
 
     @GetMapping({"/", "/notes"})
     public String listActive(Authentication auth, Model model) {
-        User user = currentUser(auth);
-        model.addAttribute("notes", notesService.getActiveNotes(user));
-        return "index";
+        try {
+            User user = currentUser(auth);
+            model.addAttribute("notes", notesService.getActiveNotes(user));
+            return "index";
+        } catch (Exception e) {
+            return "redirect:/login";
+        }
     }
 
     @GetMapping("/trash")
     public String listTrash(Authentication auth, Model model) {
-        User user = currentUser(auth);
-        model.addAttribute("deletedNotes", notesService.getDeletedNotes(user));
-        return "trash";
+        try {
+            User user = currentUser(auth);
+            model.addAttribute("deletedNotes", notesService.getDeletedNotes(user));
+            return "trash";
+        } catch (Exception e) {
+            return "redirect:/login";
+        }
     }
 
     @GetMapping("/notes/add")
     public String formAdd(Model model) {
         model.addAttribute("noteRequest", new NoteRequest());
-        model.addAttribute("isEdit", false);
         return "note-form";
+    }
+
+    @GetMapping("/notes/edit/{id}")
+    public String formEdit(@PathVariable Long id, Authentication auth, Model model) {
+        try {
+            NoteRequest request = new NoteRequest();
+            Notes note = notesService.getNoteById(id, currentUser(auth));
+            request.setTitle(note.getTitle());
+            request.setContent(note.getContent());
+
+            model.addAttribute("note", note);
+            model.addAttribute("noteRequest", request);
+            model.addAttribute("noteId", id);
+            return "note-form";
+        } catch (Exception e) {
+            return "redirect:/notes";
+        }
     }
 
     @PostMapping("/notes/add")
     public String add(@Valid @ModelAttribute("noteRequest") NoteRequest request,
                       BindingResult bindingResult,
-                      Authentication auth,
-                      Model model) {
+                      @RequestParam(value = "file", required = false) MultipartFile[] files,
+                      Authentication auth) {
         if (bindingResult.hasErrors()) {
-            model.addAttribute("isEdit", false);
             return "note-form";
         }
 
-        notesService.createNote(request, currentUser(auth));
-        return "redirect:/notes";
+        User user = currentUser(auth);
+        Notes note = notesService.createNote(request, user);
+
+        if (files != null) {
+            for (MultipartFile file : files) {
+                if (!file.isEmpty()) {
+                    try {
+                        attachmentService.save(file, note);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        return "redirect:/notes/edit/" + note.getId();
     }
 
     @GetMapping("/notes/{id}")
-    public String view(@PathVariable Long id, Authentication auth, Model model) {
-        Notes note = notesService.getNoteById(id, currentUser(auth));
-        note.getAttachments().size();
-        model.addAttribute("note", note);
-        return "note-view";
-    }
-
-    @GetMapping("/notes/edit/{id}")
-    public String formEdit(@PathVariable Long id,
-                           Authentication auth,
-                           Model model) {
-        Notes note = notesService.getNoteById(id, currentUser(auth));
-
-        NoteRequest request = new NoteRequest();
-        request.setTitle(note.getTitle());
-        request.setContent(note.getContent());
-
-        model.addAttribute("noteRequest", request);
-        model.addAttribute("noteId", id);
-        model.addAttribute("isEdit", true);
-
-        return "note-form";
+    public String view(@PathVariable Long id, Authentication auth) {
+        try {
+            notesService.getNoteById(id, currentUser(auth));
+            return "redirect:/notes/edit/" + id;
+        } catch (Exception e) {
+            return "redirect:/notes";
+        }
     }
 
     @PostMapping("/notes/edit/{id}")
@@ -109,7 +130,9 @@ public class NotesController {
                        Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("noteId", id);
-            model.addAttribute("isEdit", true);
+            try {
+                model.addAttribute("note", notesService.getNoteById(id, currentUser(auth)));
+            } catch (Exception ignored) {}
             return "note-form";
         }
         try {
@@ -146,7 +169,9 @@ public class NotesController {
 
     @PostMapping("/trash/clear")
     public String clearTrash(Authentication auth) {
-        notesService.clearTrash(currentUser(auth));
+        try {
+            notesService.clearTrash(currentUser(auth));
+        } catch (Exception ignored) {}
         return "redirect:/trash";
     }
 
@@ -180,7 +205,9 @@ public class NotesController {
                     attachment.getContentType() == null
                             ? MediaType.APPLICATION_OCTET_STREAM_VALUE
                             : attachment.getContentType()));
-            headers.setContentDispositionFormData("attachment", attachment.getFileName());
+            headers.setContentDisposition(ContentDisposition.attachment()
+                    .filename(attachment.getFileName(), StandardCharsets.UTF_8)
+                    .build());
             headers.setContentLength(attachment.getSize());
 
             return new ResponseEntity<>(attachment.getData(), headers, HttpStatus.OK);

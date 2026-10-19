@@ -2,6 +2,7 @@ package com.example.note_taking_site.repository;
 
 import com.example.note_taking_site.model.Notes;
 import com.example.note_taking_site.model.User;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -15,6 +16,7 @@ public interface NotesRepository extends JpaRepository<Notes, Long> {
 
     List<Notes> findAllByStatusOrderByUpdatedAtDesc(Notes.NoteStatus status);
 
+    @EntityGraph(attributePaths = {"attachments"})
     Optional<Notes> findByIdAndAuthor(Long id, User author);
 
     void deleteAllByAuthor(User author);
