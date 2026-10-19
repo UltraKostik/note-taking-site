@@ -109,6 +109,7 @@ public class AdminController {
             model.addAttribute("noteId", id);
             model.addAttribute("isAdminEdit", true);
             model.addAttribute("userId", note.getAuthor().getId());
+            model.addAttribute("note", note);
             return "note-form";
         } catch (Exception e) {
             return "redirect:/admin/notes";
