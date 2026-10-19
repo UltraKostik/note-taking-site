@@ -47,7 +47,7 @@ public class UserService {
 
     public User getById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User not found: " + id));
+                .orElseThrow(() -> new RuntimeException("User not found: " + id));
     }
 
     public void changeRole(Long id, User.Role role) {

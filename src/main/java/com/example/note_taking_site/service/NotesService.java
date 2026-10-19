@@ -1,7 +1,6 @@
 package com.example.note_taking_site.service;
 
 import com.example.note_taking_site.dto.NoteRequest;
-import com.example.note_taking_site.exception.NoteNotFoundException;
 import com.example.note_taking_site.model.Notes;
 import com.example.note_taking_site.model.User;
 import com.example.note_taking_site.repository.NotesRepository;
@@ -46,7 +45,7 @@ public class NotesService {
 
     public Notes getNoteById(Long id, User author) {
         return notesRepository.findByIdAndAuthor(id, author)
-                .orElseThrow(() -> new NoteNotFoundException(id));
+                .orElseThrow(() -> new RuntimeException("Note not found: " + id));
     }
 
     public List<Notes> getAllByStatus(Notes.NoteStatus status) {
@@ -55,7 +54,7 @@ public class NotesService {
 
     public void updateNote(Long id, NoteRequest request, User author) {
         Notes note = notesRepository.findByIdAndAuthor(id, author)
-                .orElseThrow(() -> new NoteNotFoundException(id));
+                .orElseThrow(() -> new RuntimeException("Note not found: " + id));
         note.setTitle(request.getTitle());
         note.setContent(request.getContent());
         notesRepository.save(note);
@@ -64,7 +63,7 @@ public class NotesService {
 
     public void moveToTrash(Long id, User author) {
         Notes note = notesRepository.findByIdAndAuthor(id, author)
-                .orElseThrow(() -> new NoteNotFoundException(id));
+                .orElseThrow(() -> new RuntimeException("Note not found: " + id));
         note.setStatus(Notes.NoteStatus.DELETED);
         notesRepository.save(note);
         log.info("Moving note id={} to trash by user {}", id, author.getEmail());
@@ -72,7 +71,7 @@ public class NotesService {
 
     public void restoreFromTrash(Long id, User author) {
         Notes note = notesRepository.findByIdAndAuthor(id, author)
-                .orElseThrow(() -> new NoteNotFoundException(id));
+                .orElseThrow(() -> new RuntimeException("Note not found: " + id));
         note.setStatus(Notes.NoteStatus.ACTIVE);
         notesRepository.save(note);
         log.info("Restoring note id={} from trash by user {}", id, author.getEmail());
@@ -80,7 +79,7 @@ public class NotesService {
 
     public void deletePermanently(Long id, User author) {
         Notes note = notesRepository.findByIdAndAuthor(id, author)
-                .orElseThrow(() -> new NoteNotFoundException(id));
+                .orElseThrow(() -> new RuntimeException("Note not found: " + id));
         notesRepository.delete(note);
         log.info("Permanently deleting note id={} by user {}", id, author.getEmail());
     }
@@ -94,5 +93,23 @@ public class NotesService {
         List<Notes> deleted = getDeletedNotes(author);
         notesRepository.deleteAll(deleted);
         log.info("Cleared trash for user {}, deleted {} notes", author.getEmail(), deleted.size());
+    }
+
+    public List<Notes> getNotesByAuthor(User author) {
+        return notesRepository.findAllByAuthorOrderByUpdatedAtDesc(author);
+    }
+
+    public Notes getNoteByIdAdmin(Long id) {
+        return notesRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Note not found: " + id));
+    }
+
+    public void updateNoteAdmin(Long id, NoteRequest request) {
+        Notes note = notesRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Note not found: " + id));
+        note.setTitle(request.getTitle());
+        note.setContent(request.getContent());
+        notesRepository.save(note);
+        log.info("Admin updating note id={}", id);
     }
 }
