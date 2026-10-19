@@ -159,6 +159,11 @@
                         >Заметки</a
                     >
                     <nav class="d-flex gap-4">
+                        <a th:if="${#authorization.expression('hasRole(''ADMIN'')')}"
+                           href="/admin"
+                           class="text-white text-decoration-none fs-5">
+                            Админка
+                        </a>
                         <a
                             href="/trash"
                             class="text-white text-decoration-none fs-5"
