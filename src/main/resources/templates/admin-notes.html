@@ -177,10 +177,12 @@
                             class="text-white text-decoration-none fs-5"
                             >Админка</a
                         >
-
-                        <div
-                            th:if="${#authorization.expression('isAuthenticated()')}"
+                        <a
+                            href="/admin/notes"
+                            class="text-white text-decoration-none fs-5 text-decoration-underline"
+                            >Все заметки</a
                         >
+                        <div>
                             <form
                                 th:action="@{/logout}"
                                 method="post"
@@ -205,15 +207,22 @@
                 <a
                     th:href="@{/admin/notes}"
                     class="btn btn-retro-outline btn-sm"
+                    th:classappend="${selectedStatus == null} ? 'active' : ''"
                     >Все</a
                 >
+
                 <a
-                    th:each="st : ${statuses}"
-                    th:href="@{/admin/notes(status=${st})}"
+                    th:href="@{/admin/notes(status='ACTIVE')}"
                     class="btn btn-retro-outline btn-sm"
-                    th:classappend="${selectedStatus == st} ? 'active' : ''"
-                    th:text="${st}"
+                    th:classappend="${selectedStatus != null and selectedStatus.name() == 'ACTIVE'} ? 'active' : ''"
                     >ACTIVE</a
+                >
+
+                <a
+                    th:href="@{/admin/notes(status='DELETED')}"
+                    class="btn btn-retro-outline btn-sm"
+                    th:classappend="${selectedStatus != null and selectedStatus.name() == 'DELETED'} ? 'active' : ''"
+                    >DELETED</a
                 >
             </div>
 
