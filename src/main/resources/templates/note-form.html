@@ -11,12 +11,13 @@
 <div class="container py-4">
     <h1 th:text="${noteId == null} ? 'Новая заметка' : 'Редактирование заметки'"></h1>
 
-    <form th:action="${isAdminEdit != null and isAdminEdit}
-                     ? @{/admin/notes/{id}/edit(id=${noteId}, userId=${userId})}
-                     : (${noteId != null}
-                        ? @{/notes/edit/{id}(id=${noteId})}
-                        : @{/notes/add})"
-          method="post">
+    <form   th:object="${noteRequest}"
+            th:action="${isAdminEdit != null and isAdminEdit}
+        ? @{/admin/notes/{id}/edit(id=${noteId}, userId=${userId})}
+        : (${noteId != null}
+            ? @{/notes/edit/{id}(id=${noteId})}
+            : @{/notes/add})"
+            method="post">
 
         <div class="mb-3">
             <label class="form-label">Заголовок</label>
