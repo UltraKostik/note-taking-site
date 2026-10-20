@@ -25,6 +25,10 @@ public interface NotesRepository extends JpaRepository<Notes, Long> {
     List<Notes> findAllByAuthorOrderByUpdatedAtDesc(User author);
 
     @Override
+    @EntityGraph(attributePaths = {"attachments", "author"})
+    Optional<Notes> findById(Long id);
+
+    @Override
     @EntityGraph(attributePaths = {"author"})
     List<Notes> findAll();
 }

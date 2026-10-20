@@ -36,8 +36,7 @@ public class AdminController {
         model.addAttribute("usersList", users);
         model.addAttribute("totalUsers", users.size());
         model.addAttribute("totalNotes", notesService.getAllNotes().size());
-        model.addAttribute("trashNotesCount",
-                notesService.getAllByStatus(Notes.NoteStatus.DELETED).size());
+        model.addAttribute("trashNotesCount", notesService.getAllByStatus(Notes.NoteStatus.DELETED).size());
         return "admin";
     }
 
@@ -55,19 +54,23 @@ public class AdminController {
 
     @PostMapping("/users/ban/{id}")
     public String banUser(@PathVariable Long id) {
+        log.info("Admin banning user id={}", id);
         try {
-            log.info("Admin banning user id={}", id);
             userService.deleteUser(id);
-        } catch (Exception ignored) {}
+        } catch (Exception e) {
+            log.error("Error banning user", e);
+        }
         return "redirect:/admin";
     }
 
     @PostMapping("/users/{id}/role")
     public String changeRole(@PathVariable Long id, @RequestParam User.Role role) {
+        log.info("Admin changing role of user id={} to {}", id, role);
         try {
-            log.info("Admin changing role of user id={} to {}", id, role);
             userService.changeRole(id, role);
-        } catch (Exception ignored) {}
+        } catch (Exception e) {
+            log.error("Error changing role", e);
+        }
         return "redirect:/admin";
     }
 
@@ -87,10 +90,12 @@ public class AdminController {
 
     @PostMapping("/notes/{id}/delete")
     public String deleteNote(@PathVariable Long id, @RequestParam(required = false) Long userId) {
+        log.info("Admin deleting note id={}", id);
         try {
-            log.info("Admin deleting note id={}", id);
             notesService.deletePermanentlyAdmin(id);
-        } catch (Exception ignored) {}
+        } catch (Exception e) {
+            log.error("Error deleting note", e);
+        }
 
         if (userId != null) {
             return "redirect:/admin/users/" + userId + "/notes";
@@ -105,11 +110,14 @@ public class AdminController {
             NoteRequest request = new NoteRequest();
             request.setTitle(note.getTitle());
             request.setContent(note.getContent());
+
             model.addAttribute("noteRequest", request);
             model.addAttribute("noteId", id);
             model.addAttribute("isAdminEdit", true);
             model.addAttribute("userId", note.getAuthor().getId());
+
             model.addAttribute("note", note);
+
             return "note-form";
         } catch (Exception e) {
             return "redirect:/admin/notes";
@@ -130,7 +138,9 @@ public class AdminController {
         }
         try {
             notesService.updateNoteAdmin(id, request);
-        } catch (Exception ignored) {}
+        } catch (Exception e) {
+            log.error("Error updating note by admin", e);
+        }
 
         if (userId != null) {
             return "redirect:/admin/users/" + userId + "/notes";

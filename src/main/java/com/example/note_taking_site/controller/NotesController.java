@@ -126,6 +126,7 @@ public class NotesController {
     public String edit(@PathVariable Long id,
                        @Valid @ModelAttribute("noteRequest") NoteRequest request,
                        BindingResult bindingResult,
+                       @RequestParam(value = "file", required = false) MultipartFile[] files,
                        Authentication auth,
                        Model model) {
         if (bindingResult.hasErrors()) {
@@ -136,7 +137,17 @@ public class NotesController {
             return "note-form";
         }
         try {
-            notesService.updateNote(id, request, currentUser(auth));
+            User user = currentUser(auth);
+            notesService.updateNote(id, request, user);
+
+            if (files != null) {
+                Notes note = notesService.getNoteById(id, user);
+                for (MultipartFile file : files) {
+                    if (!file.isEmpty()) {
+                        attachmentService.save(file, note);
+                    }
+                }
+            }
         } catch (Exception e) {
             return "redirect:/notes";
         }
