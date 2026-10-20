@@ -120,22 +120,33 @@
                     >
                     <nav class="d-flex gap-4">
                         <a
-                            href="/admin"
-                            class="text-white text-decoration-none fs-5"
-                            >Админка</a
-                        >
-                        <a
                             href="/admin/notes"
                             class="text-white text-decoration-none fs-5"
                             >Все заметки</a
                         >
-                        <div th:if="${#authorization.expression('isAuthenticated()')}">
-                            <form th:action="@{/logout}" method="post" class="d-inline">
-                                <button type="submit" class="btn btn-link text-white text-decoration-none fs-5 p-0">Выйти</button>
+                        <div
+                            th:if="${#authorization.expression('isAuthenticated()')}"
+                        >
+                            <form
+                                th:action="@{/logout}"
+                                method="post"
+                                class="d-inline"
+                            >
+                                <button
+                                    type="submit"
+                                    class="btn btn-link text-white text-decoration-none fs-5 p-0"
+                                >
+                                    Выйти
+                                </button>
                             </form>
                         </div>
 
-                        <a th:unless="${#authorization.expression('isAuthenticated()')}" href="/login" class="text-white text-decoration-none fs-5">Войти</a>
+                        <a
+                            th:unless="${#authorization.expression('isAuthenticated()')}"
+                            href="/login"
+                            class="text-white text-decoration-none fs-5"
+                            >Войти</a
+                        >
                     </nav>
                 </div>
             </div>
@@ -195,9 +206,11 @@
                             <tr th:each="user : ${usersList}">
                                 <td th:text="${user.id}">1</td>
                                 <td>
-                                    <a th:href="@{/admin/users/{id}/notes(id=${user.id})}"
-                                       th:text="${user.email}"
-                                       class="text-decoration-none fw-bold"></a>
+                                    <a
+                                        th:href="@{/admin/users/{id}/notes(id=${user.id})}"
+                                        th:text="${user.email}"
+                                        class="text-decoration-none fw-bold"
+                                    ></a>
                                 </td>
                                 <td>
                                     <span
@@ -234,17 +247,21 @@
                 </div>
                 <div class="row text-center">
                     <div class="col-md-4">
-                        <a href="https://watchbutdonotlearn.github.io/"
-                           title="lol"
-                           style="color: white; text-decoration: none;">
+                        <a
+                            href="https://watchbutdonotlearn.github.io/"
+                            title="lol"
+                            style="color: white; text-decoration: none"
+                        >
                             Обязательно проверить!!!
                         </a>
                     </div>
                     <div class="col">СПбУТУиЭ</div>
                     <div class="col-md-4">
-                        <a href="https://github.com/UltraKostik/note-taking-site"
-                           title="Репозиторий"
-                           style="color: white; text-decoration: none;">
+                        <a
+                            href="https://github.com/UltraKostik/note-taking-site"
+                            title="Репозиторий"
+                            style="color: white; text-decoration: none"
+                        >
                             Репозиторий
                         </a>
                     </div>

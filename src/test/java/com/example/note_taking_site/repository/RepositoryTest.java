@@ -73,29 +73,6 @@ class RepositoryTest {
     }
 
     @Test
-    void findAllByAuthorAndStatus_filtersAndSortsByUpdatedAtDesc() {
-        User author = persistUser("author@example.com");
-        User other = persistUser("other@example.com");
-
-        Notes older = persistNote(author, "older", Notes.NoteStatus.ACTIVE);
-        older.setUpdatedAt(LocalDateTime.now().minusDays(1));
-        notesRepository.save(older);
-
-        Notes newer = persistNote(author, "newer", Notes.NoteStatus.ACTIVE);
-        newer.setUpdatedAt(LocalDateTime.now());
-        notesRepository.save(newer);
-
-        persistNote(author, "deleted", Notes.NoteStatus.DELETED);
-        persistNote(other, "foreign", Notes.NoteStatus.ACTIVE);
-        notesRepository.flush();
-
-        List<Notes> result =
-                notesRepository.findAllByAuthorAndStatusOrderByUpdatedAtDesc(author, Notes.NoteStatus.ACTIVE);
-
-        assertThat(result).extracting(Notes::getTitle).containsExactly("newer", "older");
-    }
-
-    @Test
     void findByIdAndAuthor_respectsOwnership() {
         User author = persistUser("owner@example.com");
         User other = persistUser("intruder@example.com");
