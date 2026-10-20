@@ -151,55 +151,43 @@
 
     <body class="d-flex flex-column min-vh-100">
         <header class="bg-secondary text-white py-3">
-            <div class="container">
-                <div class="d-flex justify-content-between align-items-center">
+            <div
+                class="container d-flex justify-content-between align-items-center"
+            >
+                <a href="/" class="text-white text-decoration-none fw-bold fs-2"
+                    >Заметки</a
+                >
+                <nav class="d-flex gap-4">
                     <a
-                        href="/"
-                        class="text-white text-decoration-none fw-bold fs-2"
-                        >Заметки</a
+                        th:if="${#authorization.expression('hasRole(''ADMIN'')')}"
+                        href="/admin"
+                        class="text-white text-decoration-none fs-5"
+                        >Админка</a
                     >
-                    <nav class="d-flex gap-4">
-                        <a th:if="${#authorization.expression('hasRole(''ADMIN'')')}"
-                           href="/admin"
-                           class="text-white text-decoration-none fs-5">
-                            Админка
-                        </a>
-                        <a
-                            href="/trash"
-                            class="text-white text-decoration-none fs-5"
-                            >Корзина</a
+                    <a
+                        href="/trash"
+                        class="text-white text-decoration-none fs-5"
+                        >Корзина</a
+                    >
+                    <a
+                        href="/profile"
+                        class="text-white text-decoration-none fs-5"
+                        >Профиль</a
+                    >
+                    <form th:action="@{/logout}" method="post" class="d-inline">
+                        <button
+                            type="submit"
+                            class="btn btn-link text-white text-decoration-none fs-5 p-0"
                         >
-                        <a
-                            href="/profile"
-                            class="text-white text-decoration-none fs-5"
-                            >Профиль</a
-                        >
-                        <div>
-                            <form
-                                th:action="@{/logout}"
-                                method="post"
-                                class="d-inline"
-                            >
-                                <button
-                                    type="submit"
-                                    class="btn btn-link text-white text-decoration-none fs-5 p-0"
-                                >
-                                    Выйти
-                                </button>
-                            </form>
-                        </div>
-                        <a
-                            href="/login"
-                            class="text-white text-decoration-none fs-5"
-                            >Войти</a
-                        >
-                    </nav>
-                </div>
+                            Выйти
+                        </button>
+                    </form>
+                </nav>
             </div>
         </header>
 
         <main
-            class="container flex-grow-1 wood-table-container d-flex justify-content-center"
+            class="container flex-grow-1 wood-table-container d-flex justify-content-center py-4"
         >
             <div class="w-100" style="max-width: 800px">
                 <h1
@@ -265,7 +253,7 @@
                             ></span>
                         </div>
 
-                        <div class="d-flex justify-content-between">
+                        <div class="d-flex justify-content-between mb-4">
                             <button
                                 type="submit"
                                 class="btn btn-retro-dark px-4"
@@ -279,57 +267,68 @@
                                 >Отмена</a
                             >
                         </div>
+
+                        <div class="attachments-block">
+                            <h3 class="fw-bold mb-3" style="color: #1a365d">
+                                Вложения
+                            </h3>
+
+                            <div id="drop-zone" class="mb-3">
+                                <div class="fs-5 fw-bold mb-1">
+                                    Перетащите файлы сюда
+                                </div>
+                                <div class="text-muted small">
+                                    или нажмите, чтобы выбрать с компьютера
+                                </div>
+                            </div>
+
+                            <div id="new-files-container" class="mb-3"></div>
+
+                            <div th:if="${note != null}">
+                                <div
+                                    th:if="${#lists.isEmpty(note.attachments)}"
+                                    class="text-muted fst-italic"
+                                >
+                                    Файлов пока нет.
+                                </div>
+                                <ul
+                                    class="list-group"
+                                    th:unless="${#lists.isEmpty(note.attachments)}"
+                                >
+                                    <li
+                                        class="list-group-item d-flex justify-content-between align-items-center"
+                                        style="
+                                            background-color: #f0edf5;
+                                            border-color: #9c8a70;
+                                        "
+                                        th:each="att : ${note.attachments}"
+                                    >
+                                        <div>
+                                            <span
+                                                class="fw-bold"
+                                                style="color: #1a365d"
+                                                th:text="${att.fileName}"
+                                            ></span>
+                                            <span
+                                                class="text-muted small ms-2"
+                                                th:text="'(' + ${att.size} + ' байт)'"
+                                            ></span>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
                     </form>
-                </div>
 
-                <div class="attachments-block">
-                    <h3 class="fw-bold mb-3" style="color: #1a365d">
-                        Вложения
-                    </h3>
-
-                    <div id="drop-zone" class="mb-3">
-                        <div class="fs-5 fw-bold mb-1">
-                            Перетащите файлы сюда
-                        </div>
-                        <div class="text-muted small">
-                            или нажмите, чтобы выбрать с компьютера
-                        </div>
-                    </div>
-
-
-                    <div id="new-files-container" class="mb-3"></div>
-
-                    <div th:if="${note != null}">
-                        <div
-                            th:if="${#lists.isEmpty(note.attachments)}"
-                            class="text-muted fst-italic"
-                        >
-                            Файлов пока нет.
-                        </div>
-                        <ul
-                            class="list-group"
-                            th:unless="${#lists.isEmpty(note.attachments)}"
-                        >
+                    <div
+                        th:if="${note != null and not #lists.isEmpty(note.attachments)}"
+                    >
+                        <ul class="list-group mt-3">
                             <li
                                 class="list-group-item d-flex justify-content-between align-items-center"
-                                style="
-                                    background-color: #f0edf5;
-                                    border-color: #9c8a70;
-                                "
                                 th:each="att : ${note.attachments}"
                             >
-                                <div>
-                                    <a
-                                        th:href="@{/notes/{id}/files/{fid}(id=${note.id}, fid=${att.id})}"
-                                        th:text="${att.fileName}"
-                                        class="fw-bold text-decoration-none"
-                                        style="color: #1a365d"
-                                    ></a>
-                                    <span class="text-muted small ms-2"
-                                        >(<span th:text="${att.size}"></span>
-                                        байт)</span
-                                    >
-                                </div>
+                                <span th:text="${att.fileName}"></span>
                                 <form
                                     th:action="@{/notes/{id}/files/{fid}/delete(id=${note.id}, fid=${att.id})}"
                                     method="post"
@@ -355,19 +354,21 @@
                 </div>
                 <div class="row text-center">
                     <div class="col-md-4">
-                        <a href="https://watchbutdonotlearn.github.io/"
-                           title="lol"
-                           style="color: white; text-decoration: none;">
-                            Обязательно проверить!!!
-                        </a>
+                        <a
+                            href="https://watchbutdonotlearn.github.io/"
+                            title="lol"
+                            style="color: white; text-decoration: none"
+                            >Обязательно проверить!!!</a
+                        >
                     </div>
                     <div class="col">СПбУТУиЭ</div>
                     <div class="col-md-4">
-                        <a href="https://github.com/UltraKostik/note-taking-site"
-                           title="Репозиторий"
-                           style="color: white; text-decoration: none;">
-                            Репозиторий
-                        </a>
+                        <a
+                            href="https://github.com/UltraKostik/note-taking-site"
+                            title="Репозиторий"
+                            style="color: white; text-decoration: none"
+                            >Репозиторий</a
+                        >
                     </div>
                 </div>
             </div>
@@ -395,14 +396,14 @@
                 dropZone.addEventListener("drop", (e) => {
                     e.preventDefault();
                     dropZone.classList.remove("dragover");
-                    fileInput.files = e.dataTransfer.files; // Кладем файлы в инпут формы
+                    fileInput.files = e.dataTransfer.files;
                     updateFileList();
                 });
 
                 fileInput.addEventListener("change", updateFileList);
 
                 function updateFileList() {
-                    newFilesContainer.innerHTML = ""; // Очищаем список
+                    newFilesContainer.innerHTML = "";
                     for (let i = 0; i < fileInput.files.length; i++) {
                         const badge = document.createElement("span");
                         badge.className = "badge bg-primary p-2 m-1 fs-6";
